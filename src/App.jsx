@@ -2,12 +2,23 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import { STARTING_DECK, ENCOUNTERS, SPELLBOOK, WIZARDS } from './gameData'
 
-// Helper to shuffle array
-const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+// --- CONFIGURATION ---
+const HAND_SIZE = 12; // Increased from 7 to 12
+const SHUFFLE_COST = 0; // Made free to encourage cycling
+
+// Fisher-Yates shuffle
+const shuffle = (array) => {
+  const newArray = [...array];
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+  }
+  return newArray;
+};
 
 function App() {
   // --- STATE ---
-  const [gameState, setGameState] = useState('START'); // START, BATTLE, REWARD, GAMEOVER, VICTORY
+  const [gameState, setGameState] = useState('START');
   const [playerAvatar, setPlayerAvatar] = useState(WIZARDS[0]);
   const [deck, setDeck] = useState([]);
   const [hand, setHand] = useState([]);
@@ -16,7 +27,6 @@ function App() {
   const [enemyIndex, setEnemyIndex] = useState(0);
   const [logs, setLogs] = useState(["Welcome, Leximancer."]);
   
-  // Refs for scrolling log
   const logEndRef = useRef(null);
 
   // --- INITIALIZATION ---
@@ -32,28 +42,33 @@ function App() {
       setGameState('VICTORY');
       return;
     }
-    // Deep copy enemy so we don't mutate the base data between runs
     const enemyData = JSON.parse(JSON.stringify(ENCOUNTERS[index]));
     enemyData.maxHp = enemyData.hp;
     enemyData.maxWp = enemyData.wp;
     
     setCurrentEnemy(enemyData);
     setGameState('BATTLE');
-    drawHand(7, shuffle(STARTING_DECK)); // Simple reshuffle for prototype
+    
+    // Start with a fresh full hand
+    drawHand(HAND_SIZE, shuffle(STARTING_DECK), []); 
     setSpellSlots([]);
     addLog(`A wild ${enemyData.name} appears!`);
   };
 
   // --- HAND MANAGEMENT ---
-  const drawHand = (count, currentDeck) => {
-    const newHand = [];
-    const deckCopy = [...currentDeck];
+  // Modified to handle reshuffling automatically if deck runs dry
+  const drawHand = (count, currentDeck, currentHand) => {
+    const newHand = [...currentHand];
+    let deckCopy = [...currentDeck];
+    
     for (let i = 0; i < count; i++) {
-      if (deckCopy.length > 0) {
-        // Create unique ID for every tile to handle duplicate letters
-        newHand.push({ id: Math.random(), char: deckCopy.pop() });
+      if (deckCopy.length === 0) {
+        addLog("Deck empty. Reshuffling...");
+        deckCopy = shuffle(STARTING_DECK);
       }
+      newHand.push({ id: Math.random(), char: deckCopy.pop() });
     }
+    
     setDeck(deckCopy);
     setHand(newHand);
   };
@@ -68,15 +83,21 @@ function App() {
     setHand([...hand, tile]);
   };
 
+  const discardAndRedraw = () => {
+    // Discard entire hand and spell slots, draw fresh 12
+    setSpellSlots([]);
+    drawHand(HAND_SIZE, deck, []); // Passing empty array as current hand clears it
+    addLog("Mulligan! You drew a fresh hand.");
+  };
+
   // --- COMBAT LOGIC ---
   const castSpell = () => {
     if (spellSlots.length === 0) return;
 
     const word = spellSlots.map(t => t.char).join("");
-    const wordData = SPELLBOOK[word]; // Check magic dictionary
+    const wordData = SPELLBOOK[word]; 
     
-    // Default stats for non-magic words
-    let power = word.length; // 1 dmg per letter
+    let power = word.length;
     let tags = [];
     let isMagic = false;
 
@@ -86,23 +107,20 @@ function App() {
       isMagic = true;
     }
 
-    // Process against Enemy
     let multipliers = 1.0;
-    let targetStat = 'hp'; // default physical
+    let targetStat = 'hp';
     let battleLog = [`You cast "${word}"!`];
 
     if (isMagic) {
       battleLog.push(`It pulsates with [${tags.join(", ")}] energy.`);
       
       tags.forEach(tag => {
-        // Weaknesses
         if (currentEnemy.weaknesses[tag]) {
           const weak = currentEnemy.weaknesses[tag];
           multipliers *= weak.mult;
           battleLog.push(`> ${weak.msg} (x${weak.mult})`);
           if (weak.target) targetStat = weak.target;
         }
-        // Resistances
         if (currentEnemy.resistances[tag]) {
           const res = currentEnemy.resistances[tag];
           multipliers *= res.mult;
@@ -115,7 +133,6 @@ function App() {
 
     const finalDamage = Math.floor(power * multipliers);
     
-    // Apply Damage
     const newEnemy = { ...currentEnemy };
     if (targetStat === 'hp') {
       newEnemy.hp -= finalDamage;
@@ -125,30 +142,25 @@ function App() {
       battleLog.push(`Dealt ${finalDamage} Willpower DMG!`);
     }
 
-    // Update State
     addLog(...battleLog);
     setCurrentEnemy(newEnemy);
-    setSpellSlots([]); // discard played tiles
     
-    // Check Win/Loss conditions
+    // CLEAR PLAYED TILES & REFILL
+    setSpellSlots([]);
+    
+    // REFILL HAND TO MAX
+    const tilesNeeded = HAND_SIZE - hand.length;
+    if (tilesNeeded > 0) {
+      drawHand(tilesNeeded, deck, hand);
+    }
+    
     if (newEnemy.hp <= 0 || newEnemy.wp <= 0) {
       addLog(`The ${newEnemy.name} is defeated!`);
       setTimeout(() => setGameState('REWARD'), 1000);
     } else {
-      // Enemy Turn (Simplified)
       setTimeout(() => {
         addLog(`${newEnemy.name} attacks!`);
-        // In full game, player has HP. For now, endless loop until win.
-        drawCardsIfNeeded();
       }, 1000);
-    }
-  };
-
-  const drawCardsIfNeeded = () => {
-    // Refill hand to 7
-    const needed = 7 - hand.length;
-    if (needed > 0) {
-      drawHand(needed, deck.length > 0 ? deck : shuffle(STARTING_DECK));
     }
   };
 
@@ -156,12 +168,10 @@ function App() {
     setLogs(prev => [...prev, ...messages]);
   };
 
-  // Auto-scroll logs
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
 
-  // --- RENDER HELPERS ---
   const renderTile = (tile, onClick) => (
     <div key={tile.id} className="tile" onClick={() => onClick(tile)}>
       {tile.char}
@@ -207,7 +217,6 @@ function App() {
     );
   }
 
-  // BATTLE SCREEN
   return (
     <div className="app">
       <div className="header">
@@ -249,7 +258,16 @@ function App() {
 
       <div className="controls">
         <button onClick={() => { setSpellSlots([]); setHand([...hand, ...spellSlots]); }}>Clear</button>
-        <button onClick={() => { setHand([]); drawCardsIfNeeded(); }}>Shuffle (-5HP)</button>
+        
+        {/* UPDATED DISCARD BUTTON */}
+        <button 
+            onClick={discardAndRedraw} 
+            title="Discard all tiles and draw fresh ones"
+            style={{border: '1px solid #e74c3c', color: '#e74c3c'}}
+        >
+            Discard Hand ♻
+        </button>
+
         <button className="cast-btn" disabled={spellSlots.length === 0} onClick={castSpell}>CAST</button>
       </div>
     </div>
