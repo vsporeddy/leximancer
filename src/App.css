@@ -16,7 +16,7 @@
 
 body {
   margin: 0;
-  background-color: #331b13; /* The table/desk underneath */
+  background-color: #24120c; /* The table/desk underneath */
   color: var(--ink-primary);
   font-family: var(--font-body);
   display: flex;
@@ -150,6 +150,7 @@ h1 {
   display: flex;
   gap: 8px;
   justify-content: center;
+  text-align: left;
   width: 80%; /* Don't touch edges */
   margin: 0 auto;
 }
@@ -219,7 +220,7 @@ h1 {
 .bar-text {
   position: absolute;
   width: 100%;
-  text-align: center;
+  text-align: left;
   font-size: 0.75rem;
   line-height: 18px;
   color: #fff;
@@ -264,13 +265,13 @@ h1 {
 
 /* --- TILES (Wooden Blocks / Ivory) --- */
 .tile {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   background: #fdf5e6; /* Ivory */
   color: #2c241b;
   font-family: var(--font-header);
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -284,6 +285,17 @@ h1 {
   user-select: none;
   transition: transform 0.1s;
   animation: tile-pop 0.2s ease-out;
+  position: relative;
+}
+
+.tile-score {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 0.6rem;
+  font-weight: normal;
+  color: var(--ink-secondary);
+  opacity: 0.9;
 }
 
 .tile:active {

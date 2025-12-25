@@ -58,11 +58,11 @@ export default function BattleScreen({
           
           <div className="enemy-bars">
             <div className="bar">
-              <div className="bar-text">HP {enemy.hp}</div>
+              <div className="bar-text">❤️ {enemy.hp}</div>
               <div className="bar-fill hp-fill" style={{ width: `${enemyHpPct}%` }}></div>
             </div>
             <div className="bar">
-              <div className="bar-text">WP {enemy.wp}</div>
+              <div className="bar-text">🧠 {enemy.wp}</div>
               <div className="bar-fill wp-fill" style={{ width: `${enemyWpPct}%` }}></div>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default function BattleScreen({
             
             <div className="player-stats">
                <div className="bar">
-                 <div className="bar-text" style={{ textAlign: 'left', paddingLeft: '5px' }}>HP {playerHp}/{maxPlayerHp}</div>
+                 <div className="bar-text" style={{ textAlign: 'left', paddingLeft: '5px' }}>❤️ {playerHp}/{maxPlayerHp}</div>
                  <div className="bar-fill hp-fill" style={{ width: `${playerHpPct}%` }}></div>
                </div>
                
