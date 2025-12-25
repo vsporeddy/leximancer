@@ -14,7 +14,10 @@ export default function BattleScreen({
   spellSlots, 
   actions,
   isValidWord,
-  shakeError
+  shakeError,
+  // NEW PROPS
+  animState, // { player: '', enemy: '' }
+  spellEffect // Emoji char or null
 }) {
   const { onMoveTile, onReturnTile, onCast, onClear, onDiscard } = actions;
 
@@ -25,17 +28,17 @@ export default function BattleScreen({
   const feedbackColor = isValidWord ? '#4e6d46' : (spellSlots.length > 0 ? '#b85c50' : '#8b735b');
   const feedbackText = spellSlots.length > 0 ? (isValidWord ? "VALID SPELL" : "INVALID GIBBERISH") : "PREPARE SPELL";
 
-  // --- DYNAMIC SCALING ---
-  // Base 4rem + 0.8rem per level. Caps around level 10 visually.
   const enemySize = `${4 + (enemy.level || 1) * 0.8}rem`;
 
   return (
     <div className="app">
       <div className="arena">
         
+        {/* --- SPELL EFFECT OVERLAY --- */}
+        {spellEffect && <div className="spell-overlay">{spellEffect}</div>}
+
         {/* --- ENEMY SECTION --- */}
         <div className="enemy-position">
-          {/* 1. NAME + LEVEL */}
           <h3>
             <span style={{fontSize: '0.7em', color: '#8b735b', marginRight: '6px'}}>
               LV.{enemy.level || 1}
@@ -43,15 +46,14 @@ export default function BattleScreen({
             {enemy.name}
           </h3>
           
-          {/* 2. EMOJI (Dynamic Size) */}
+          {/* Apply animation class here */}
           <div 
-            className="enemy-emoji" 
+            className={`enemy-emoji ${animState.enemy}`} 
             style={{ fontSize: enemySize }}
           >
             {enemy.emoji}
           </div>
           
-          {/* 3. BARS */}
           <div className="enemy-bars">
             <div className="bar">
               <div className="bar-text">HP {enemy.hp}</div>
@@ -67,7 +69,11 @@ export default function BattleScreen({
         {/* --- PLAYER SECTION --- */}
         <div className="player-position">
           <div className="player-row">
-            <div className="player-avatar">{playerAvatar}</div>
+            {/* Apply animation class here */}
+            <div className={`player-avatar ${animState.player}`}>
+              {playerAvatar}
+            </div>
+            
             <div className="player-stats">
                <div className="bar">
                  <div className="bar-text" style={{ textAlign: 'left', paddingLeft: '5px' }}>HP {playerHp}/{maxPlayerHp}</div>
@@ -90,7 +96,7 @@ export default function BattleScreen({
 
       <CombatLog logs={logs} />
       
-      {/* ... Rest of the file remains identical ... */}
+      {/* ... Rest of Controls ... */}
       <div style={{ 
         height: '20px', 
         color: feedbackColor, 

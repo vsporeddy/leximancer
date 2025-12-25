@@ -97,3 +97,25 @@ export const SPELLBOOK = {
   "WIND": { tags: ["air"], power: 4 },
   "ROCK": { tags: ["earth"], power: 4 },
 };
+
+// ... existing exports ...
+
+export const TAG_EMOJIS = {
+  fire: "🔥",
+  heat: "🔥",
+  water: "💧",
+  ice: "❄️",
+  cold: "❄️",
+  blade: "⚔️",
+  axe: "🪓",
+  blunt: "🔨",
+  bribe: "💰",
+  fear: "💀",
+  undead: "👻",
+  light: "✨",
+  nature: "🌿",
+  wood: "🪵",
+  lightning: "⚡",
+  air: "💨",
+  earth: "🪨"
+};

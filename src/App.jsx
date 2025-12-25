@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import { STARTING_DECK, ENCOUNTERS, SPELLBOOK, WIZARDS } from './gameData'
+import { STARTING_DECK, ENCOUNTERS, SPELLBOOK, WIZARDS, TAG_EMOJIS } from './gameData'
 
 import StartScreen from './screens/StartScreen'
 import BattleScreen from './screens/BattleScreen'
 import RewardScreen from './screens/RewardScreen'
 
-const HAND_SIZE = 16;
+const HAND_SIZE = 20;
 const MAX_PLAYER_HP = 50;
 
 const shuffle = (array) => {
@@ -24,18 +24,22 @@ function App() {
   const [dictionary, setDictionary] = useState(new Set());
   const [isDictLoading, setIsDictLoading] = useState(true);
 
-  // --- PLAYER STATE ---
+  // Stats
   const [playerHp, setPlayerHp] = useState(MAX_PLAYER_HP);
-  const [inventory, setInventory] = useState(["🪄"]); // Start with Wand
+  const [inventory, setInventory] = useState(["🪄"]); 
 
-  // --- COMBAT STATE ---
+  // Combat Data
   const [deck, setDeck] = useState([]);
   const [hand, setHand] = useState([]);
   const [spellSlots, setSpellSlots] = useState([]);
   const [currentEnemy, setCurrentEnemy] = useState(null);
   const [enemyIndex, setEnemyIndex] = useState(0);
   const [logs, setLogs] = useState([]);
+  
+  // Visuals / Animations
   const [shakeError, setShakeError] = useState(false);
+  const [animState, setAnimState] = useState({ player: '', enemy: '' });
+  const [spellEffect, setSpellEffect] = useState(null);
 
   useEffect(() => {
     const loadDictionary = async () => {
@@ -80,6 +84,7 @@ function App() {
     setGameState('BATTLE');
     drawHand(HAND_SIZE, shuffle(STARTING_DECK), []);
     setSpellSlots([]);
+    setAnimState({ player: '', enemy: '' }); // Reset anims
     addLog(`A wild ${enemyData.name} appears!`);
   };
 
@@ -105,81 +110,118 @@ function App() {
       return;
     }
 
-    // --- PLAYER ATTACK ---
-    const word = currentWordStr;
-    const wordData = SPELLBOOK[word]; 
-    let power = word.length;
-    let tags = [];
-    let isMagic = false;
+    // 1. TRIGGER PLAYER ACTION ANIMATION
+    setAnimState(prev => ({ ...prev, player: 'anim-action' }));
 
-    if (wordData) {
-      power = wordData.power;
-      tags = wordData.tags;
-      isMagic = true;
-    }
-
-    let multipliers = 1.0;
-    let targetStat = 'hp';
-    let battleLog = [`You cast "${word}"!`];
-
-    if (isMagic) {
-      battleLog.push(`It glows with [${tags.join(", ")}] power.`);
-      tags.forEach(tag => {
-        if (currentEnemy.weaknesses[tag]) {
-          const weak = currentEnemy.weaknesses[tag];
-          multipliers *= weak.mult;
-          battleLog.push(`> ${weak.msg} (x${weak.mult})`);
-          if (weak.target) targetStat = weak.target;
-        }
-        if (currentEnemy.resistances[tag]) {
-          const res = currentEnemy.resistances[tag];
-          multipliers *= res.mult;
-          battleLog.push(`> ${res.msg} (x${res.mult})`);
-        }
-      });
-    } else {
-      battleLog.push("A mundane spell.");
-    }
-
-    const finalDamage = Math.floor(power * multipliers);
-    const newEnemy = { ...currentEnemy };
-    
-    if (targetStat === 'hp') newEnemy.hp -= finalDamage;
-    else newEnemy.wp -= finalDamage;
-
-    battleLog.push(`Dealt ${finalDamage} ${targetStat.toUpperCase()} damage!`);
-    addLog(...battleLog);
-    setCurrentEnemy(newEnemy);
-    setSpellSlots([]); // Clear slots
-
-    // --- CHECK WIN ---
-    if (newEnemy.hp <= 0 || newEnemy.wp <= 0) {
-      addLog(`The ${newEnemy.name} is vanquished!`);
-      setTimeout(() => setGameState('REWARD'), 1000);
-      return;
-    }
-
-    // --- ENEMY COUNTER-ATTACK ---
-    // Simple logic: Enemy attacks if not dead
+    // 2. WAIT FOR ACTION ANIMATION TO FINISH, THEN RESOLVE EFFECT (500ms)
     setTimeout(() => {
-        const dmg = Math.floor(Math.random() * 6) + 5; // 5-10 dmg
-        setPlayerHp(prev => {
-            const newHp = Math.max(0, prev - dmg);
-            if (newHp === 0) {
-                setGameState('GAMEOVER'); // Add basic Game Over handling if you want
-            }
-            return newHp;
+      // Clear player animation
+      setAnimState(prev => ({ ...prev, player: '' }));
+
+      const word = currentWordStr;
+      const wordData = SPELLBOOK[word]; 
+      
+      let power = word.length;
+      let tags = [];
+      let isMagic = false;
+
+      if (wordData) {
+        power = wordData.power;
+        tags = wordData.tags;
+        isMagic = true;
+      }
+
+      // DETERMINE VISUAL EFFECT
+      // Find first tag that has an emoji, or default to Sparkle
+      let effectEmoji = "✨";
+      if (tags.length > 0) {
+        const found = tags.find(t => TAG_EMOJIS[t]);
+        if (found) effectEmoji = TAG_EMOJIS[found];
+      }
+      
+      // TRIGGER SPELL VISUAL
+      setSpellEffect(effectEmoji);
+      // Remove visual after 1s
+      setTimeout(() => setSpellEffect(null), 1000);
+
+      // TRIGGER ENEMY DAMAGE ANIMATION
+      setAnimState(prev => ({ ...prev, enemy: 'anim-damage' }));
+      setTimeout(() => setAnimState(prev => ({ ...prev, enemy: '' })), 400);
+
+      // --- CALCULATIONS ---
+      let multipliers = 1.0;
+      let targetStat = 'hp';
+      let battleLog = [`You cast "${word}"!`];
+
+      if (isMagic) {
+        tags.forEach(tag => {
+          if (currentEnemy.weaknesses[tag]) {
+            const weak = currentEnemy.weaknesses[tag];
+            multipliers *= weak.mult;
+            battleLog.push(`> ${weak.msg} (x${weak.mult})`);
+            if (weak.target) targetStat = weak.target;
+          }
+          if (currentEnemy.resistances[tag]) {
+            const res = currentEnemy.resistances[tag];
+            multipliers *= res.mult;
+            battleLog.push(`> ${res.msg} (x${res.mult})`);
+          }
         });
-        addLog(`${newEnemy.name} attacks you for ${dmg} damage!`);
-        
-        // Refill hand AFTER enemy attack
-        const tilesNeeded = HAND_SIZE - hand.length;
-        if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
-        
-    }, 1000);
+      }
+
+      const finalDamage = Math.floor(power * multipliers);
+      const newEnemy = { ...currentEnemy };
+      
+      if (targetStat === 'hp') newEnemy.hp -= finalDamage;
+      else newEnemy.wp -= finalDamage;
+
+      battleLog.push(`Dealt ${finalDamage} ${targetStat.toUpperCase()} damage!`);
+      addLog(...battleLog);
+      setCurrentEnemy(newEnemy);
+      setSpellSlots([]);
+
+      // --- CHECK WIN ---
+      if (newEnemy.hp <= 0 || newEnemy.wp <= 0) {
+        setTimeout(() => {
+           addLog(`The ${newEnemy.name} is vanquished!`);
+           setTimeout(() => setGameState('REWARD'), 1000);
+        }, 500); // Small delay after hit
+        return;
+      }
+
+      // --- ENEMY TURN (Delay for readability) ---
+      setTimeout(() => {
+        handleEnemyAttack(newEnemy);
+      }, 1500);
+
+    }, 500); // End of Player Action Delay
   };
 
-  // ... (Standard handlers)
+  const handleEnemyAttack = (enemyEntity) => {
+    // 1. Enemy Action Animation
+    setAnimState(prev => ({ ...prev, enemy: 'anim-action' }));
+
+    setTimeout(() => {
+        setAnimState(prev => ({ ...prev, enemy: '' }));
+        
+        // 2. Player Damage Animation
+        setAnimState(prev => ({ ...prev, player: 'anim-damage' }));
+        setTimeout(() => setAnimState(prev => ({ ...prev, player: '' })), 400);
+
+        const dmg = Math.floor(Math.random() * 6) + 5; 
+        setPlayerHp(prev => {
+            const newHp = Math.max(0, prev - dmg);
+            if (newHp === 0) setGameState('GAMEOVER');
+            return newHp;
+        });
+        addLog(`${enemyEntity.name} attacks you for ${dmg} damage!`);
+        
+        const tilesNeeded = HAND_SIZE - hand.length;
+        if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
+    }, 500);
+  };
+
+  // ... (Rest of handlers: handleMoveTile, handleReturnTile, etc.)
   const handleMoveTile = (tile) => {
     setHand(hand.filter(t => t.id !== tile.id));
     setSpellSlots([...spellSlots, tile]);
@@ -199,7 +241,6 @@ function App() {
   };
   const addLog = (...messages) => setLogs(prev => [...prev, ...messages]);
 
-  // --- RENDER ---
   if (gameState === 'START') return <StartScreen onStart={startGame} avatar={playerAvatar} isLoading={isDictLoading} />;
   
   if (gameState === 'GAMEOVER') {
@@ -237,9 +278,9 @@ function App() {
   return (
     <BattleScreen 
       playerAvatar={playerAvatar}
-      playerHp={playerHp}       // Pass prop
-      maxPlayerHp={MAX_PLAYER_HP} // Pass prop
-      inventory={inventory}     // Pass prop
+      playerHp={playerHp}       
+      maxPlayerHp={MAX_PLAYER_HP} 
+      inventory={inventory}     
       encounterIndex={enemyIndex}
       totalEncounters={ENCOUNTERS.length}
       enemy={currentEnemy}
@@ -248,6 +289,8 @@ function App() {
       spellSlots={spellSlots}
       isValidWord={!!isValidWord}
       shakeError={shakeError} 
+      animState={animState}    // Pass prop
+      spellEffect={spellEffect} // Pass prop
       actions={{
         onMoveTile: handleMoveTile,
         onReturnTile: handleReturnTile,
