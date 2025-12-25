@@ -15,7 +15,7 @@
 
 body {
   margin: 0;
-  background-color: #271303; /* The table/desk underneath */
+  background-color: #4b3e32; /* The table/desk underneath */
   color: var(--ink-primary);
   font-family: var(--font-body);
   display: flex;
@@ -85,10 +85,14 @@ h1 {
   color: var(--ink-primary);
   text-transform: uppercase;
   letter-spacing: 4px;
-  border-bottom: 2px solid var(--accent-gold);
+  /* border-bottom: 2px solid var(--accent-gold); */
   padding-bottom: 10px;
   margin-bottom: 30px;
-  font-size: 2.5rem; /* Base size */
+  white-space: nowrap;
+  font-size: clamp(1.5rem, 10vw, 2.5rem); 
+  display: flex;
+  justify-content: center;
+  align-items: baseline; 
 }
 
 .big-cap {
