@@ -1,20 +1,35 @@
 export const TAG_EMOJIS = {
-  // Elements
-  fire: "🔥", heat: "🔥", burn: "🔥",
-  water: "💧", ice: "❄️", cold: "❄️",
-  earth: "🪨", rock: "🪨", nature: "🌿", plant: "🌿", wood: "🪵",
-  air: "💨", wind: "💨", lightning: "⚡", storm: "⚡",
+  // CORE ELEMENTS
+  fire: "🔥",  // Covers: heat, burn, lava, ash
+  water: "💧", // Covers: rain, mist, river
+  ice: "❄️",   // Covers: cold, frost, snow
+  earth: "🪨", // Covers: rock, stone, mountain
+  air: "💨",   // Covers: wind, storm, gas
+  plant: "🌿", // Covers: nature, wood, vine
+  nature: "🌱",
   
-  // Physical
-  blade: "⚔️", cut: "⚔️",
-  blunt: "🔨", smash: "🔨", force: "💪",
-  guard: "🛡️", metal: "⚙️",
+  // PHYSICAL
+  blade: "⚔️", // Covers: cut, sharp, axe
+  blunt: "🔨", // Covers: smash, force, heavy
+  metal: "⚙️", // Covers: iron, steel
+  pierce: "🏹",
+  bleed: "🩸",
+  
+  // ELEMENTAL / STATUS
+  poison: "☠️",
+  electric: "⚡",
+  dark: "🌑",
+  holy: "✨",
 
-  // Abstract
-  bribe: "💰", greed: "💰", wealth: "💎",
-  fear: "💀", undead: "👻", dark: "🌑", holy: "✨", light: "✨",
-  heal: "💖", motion: "🏃", time: "⏳",
-  
-  // Monster specific
-  sin: "😈"
+  // ABSTRACT / UTILITY
+  bribe: "💰", // Covers: greed, gold, wealth
+  fear: "😱",  // Covers: terror, undead, scare
+  heal: "💖",  // Covers: health, cure
+  food: "🍎",  // Covers: eat, fruit, meat
+  motion: "🏃", // Covers: run, flee, speed
+  stun: "🧊",  // Covers: stop, freeze, trap
+  silence: "🔇",
+  sleep: "💤",
+  shield: "🛡️",
+  summon: "🪄"
 };

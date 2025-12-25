@@ -20,7 +20,7 @@ const POS_TAG_MAP = {
     adverb: 'adverb',
 };
 
-const HAND_SIZE = 16;
+const HAND_SIZE = 35;
 const MAX_PLAYER_HP = 100;
 
 const shuffle = (array) => {
@@ -47,6 +47,7 @@ function App() {
   
   const [currentEnemy, setCurrentEnemy] = useState(null);
   const [enemyIndex, setEnemyIndex] = useState(0);
+  const [playerDots, setPlayerDots] = useState([]); // Ongoing effects on player (poison/bleed)
   const [logs, setLogs] = useState([]);
   
   const [shakeError, setShakeError] = useState(false);
@@ -93,6 +94,7 @@ function App() {
     enemyData.maxHp = enemyData.hp;
     enemyData.maxWp = enemyData.wp;
     enemyData.isStunned = false; // Initialize stun state
+    enemyData.statusEffects = []; // Ongoing status effects (poison, bleed, stun, etc)
     
     setCurrentEnemy(enemyData);
     setGameState('BATTLE');
@@ -117,6 +119,30 @@ function App() {
   };
 
   const handleCast = () => {
+    // Apply ongoing effects on player at start of player's turn
+    if (playerDots.length > 0) {
+      let totalDamage = 0;
+      let remaining = [];
+      playerDots.forEach(effect => {
+        // Only apply per-turn damage for effects that deal damage
+        if (effect.damagePerTick) {
+          const dmg = effect.damagePerTick;
+          totalDamage += dmg;
+          addLog(`You suffer *${dmg}* ${effect.tag} damage (ongoing).`);
+        }
+        if (effect.ticks > 1) remaining.push({...effect, ticks: effect.ticks - 1});
+      });
+      setPlayerDots(remaining);
+      if (totalDamage > 0) {
+        setPlayerHp(prev => {
+          const newHp = Math.max(0, prev - totalDamage);
+          if (newHp === 0) setGameState('GAMEOVER');
+          return newHp;
+        });
+        addLog(`You take *${totalDamage}* damage from ongoing effects.`);
+      }
+    }
+
     if (!isValidWord) {
       addLog(`"${currentWordStr}" fizzles!`);
       setShakeError(true);
@@ -179,21 +205,64 @@ function App() {
 
       // C. DAMAGE (Enemy)
       let nextEnemyState = { ...currentEnemy };
+
+      // Apply any statusEffect that targets the caster (e.g., shield cast on self)
+      if (result.statusEffect && result.statusEffect.applyTo === 'caster') {
+          // Apply to player
+          setPlayerDots(prev => ([...prev, {...result.statusEffect}]));
+          addLog(`You gain ${result.statusEffect.tag}!`);
+      }
+
+      // Attach statusEffects to the enemy if effect intends target
+      if (result.statusEffect && (!result.statusEffect.applyTo || result.statusEffect.applyTo === 'target')) {
+          nextEnemyState.statusEffects = nextEnemyState.statusEffects || [];
+          nextEnemyState.statusEffects.push({...result.statusEffect});
+          addLog(`#${nextEnemyState.name}# gains ${result.statusEffect.tag}!`);
+      }
+
+      // Attach DOTs to enemy
+      if (result.dot) {
+          nextEnemyState.statusEffects = nextEnemyState.statusEffects || [];
+          nextEnemyState.statusEffects.push({...result.dot});
+          addLog(`#${nextEnemyState.name}# is afflicted with ${result.dot.tag}!`);
+      }
+
       if (result.damage > 0) {
           setAnimState(prev => ({ ...prev, enemy: 'anim-damage' }));
           setTimeout(() => setAnimState(prev => ({ ...prev, enemy: '' })), 400);
-          
-          if (result.targetStat === 'hp') nextEnemyState.hp -= result.damage;
-          else nextEnemyState.wp -= result.damage;
-          
-          addLog(`Dealt *${result.damage}* ${result.targetStat.toUpperCase()} damage!`);
+
+          // Check for shield on enemy
+          let damageToApply = result.damage;
+          const shieldIndex = nextEnemyState.statusEffects ? nextEnemyState.statusEffects.findIndex(s => s.tag === 'shield') : -1;
+          if (shieldIndex >= 0) {
+              const shield = nextEnemyState.statusEffects[shieldIndex];
+              const block = shield.block || 2;
+              const consumed = Math.min(block, damageToApply);
+              damageToApply -= consumed;
+              addLog(`#${nextEnemyState.name}#'s shield blocks *${consumed}* damage!`);
+              // remove shield effect
+              nextEnemyState.statusEffects.splice(shieldIndex, 1);
+          }
+
+          if (damageToApply > 0) {
+              if (result.targetStat === 'hp') nextEnemyState.hp -= damageToApply;
+              else nextEnemyState.wp -= damageToApply;
+              addLog(`Dealt *${damageToApply}* ${result.targetStat.toUpperCase()} damage!`);
+          } else {
+              addLog(`No damage dealt (blocked).`);
+          }
       }
 
       // D. STUN (Enemy)
       if (result.status === 'stun') {
+          nextEnemyState.statusEffects = nextEnemyState.statusEffects || [];
+          nextEnemyState.statusEffects.push({ tag: 'stun', ticks: 1 });
           nextEnemyState.isStunned = true;
           addLog(`#${currentEnemy.name}# is stunned!`);
       }
+
+      // Keep isStunned derived for compatibility
+      nextEnemyState.isStunned = !!(nextEnemyState.statusEffects && nextEnemyState.statusEffects.find(s => s.tag === 'stun'));
 
       setCurrentEnemy(nextEnemyState);
       setSpellSlots([]);
@@ -216,7 +285,51 @@ function App() {
   };
 
   const handleEnemyAttack = (enemyEntity) => {
-    // CHECK STUN
+    // Process ongoing statusEffects on enemy at start of its turn
+    if (enemyEntity.statusEffects && enemyEntity.statusEffects.length > 0) {
+      let total = 0;
+      let newStatus = [];
+      let stunnedThisTurn = false;
+
+      enemyEntity.statusEffects.forEach(effect => {
+         if (effect.tag === 'bleed' || effect.tag === 'poison') {
+           const dmg = effect.damagePerTick || 0;
+           total += dmg;
+           addLog(`#${enemyEntity.name}# takes *${dmg}* ${effect.tag} damage (ongoing).`);
+         }
+         if (effect.tag === 'stun') {
+           stunnedThisTurn = true;
+         }
+
+         if (effect.ticks > 1) newStatus.push({...effect, ticks: effect.ticks - 1});
+      });
+
+      // Apply accumulated damage from effects
+      if (total > 0) {
+         const newHp = enemyEntity.hp - total;
+         setCurrentEnemy(prev => ({ ...prev, statusEffects: newStatus, hp: newHp }));
+         addLog(`#${enemyEntity.name}# takes *${total}* damage from ongoing effects.`);
+         if (newHp <= 0) {
+            setTimeout(() => { addLog(`The #${enemyEntity.name}# is vanquished!`); setTimeout(() => setGameState('REWARD'), 1000); }, 500);
+            return; // enemy died from DOT, skip its action
+         }
+      } else {
+         setCurrentEnemy(prev => ({ ...prev, statusEffects: newStatus }));
+      }
+
+      // If stunned effect present, they skip action this turn
+      if (stunnedThisTurn) {
+        addLog(`#${enemyEntity.name}# is stunned and cannot act!`);
+        // Clear a stun (it was decremented above)
+        setCurrentEnemy(prev => ({ ...prev, isStunned: false }));
+        // Refill hand anyway so player can play
+        const tilesNeeded = HAND_SIZE - hand.length;
+        if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
+        return;
+      }
+    }
+
+    // CHECK STUN (legacy)
     if (enemyEntity.isStunned) {
         addLog(`#${enemyEntity.name}# is stunned and cannot act!`);
         // Clear stun for next turn
@@ -265,23 +378,64 @@ function App() {
              addLog(`#${enemyEntity.name}# healed *${result.heal}* HP.`);
         }
 
+        // Apply status effects (shield, etc.) returned by the enemy's spell
+        if (result.statusEffect) {
+            if (result.statusEffect.applyTo === 'caster') {
+                // Apply to enemy itself
+                setCurrentEnemy(prev => ({ ...prev, statusEffects: [...(prev.statusEffects || []), {...result.statusEffect}] }));
+                addLog(`#${enemyEntity.name}# gains ${result.statusEffect.tag}!`);
+            } else {
+                // Apply to player
+                setPlayerDots(prev => ([...prev, {...result.statusEffect}]));
+                addLog(`You are afflicted with ${result.statusEffect.tag}!`);
+            }
+        }
+
         // Damage (Player)
         if (result.damage > 0) {
-            setAnimState(prev => ({ ...prev, player: 'anim-damage' }));
-            setTimeout(() => setAnimState(prev => ({ ...prev, player: '' })), 400);
+            let damageToApply = result.damage;
 
-            setPlayerHp(prev => {
-                const newHp = Math.max(0, prev - result.damage);
-                if (newHp === 0) setGameState('GAMEOVER');
-                return newHp;
-            });
-            addLog(`You take *${result.damage}* damage!`);
+            // Check for shield on player
+            const shieldIndex = playerDots ? playerDots.findIndex(s => s.tag === 'shield') : -1;
+            if (shieldIndex >= 0) {
+                const shield = playerDots[shieldIndex];
+                const block = shield.block || 2;
+                const consumed = Math.min(block, damageToApply);
+                damageToApply -= consumed;
+                addLog(`Your shield blocks *${consumed}* damage!`);
+                // remove the shield
+                setPlayerDots(prev => {
+                    const copy = [...prev];
+                    copy.splice(shieldIndex, 1);
+                    return copy;
+                });
+            }
+
+            if (damageToApply > 0) {
+                setAnimState(prev => ({ ...prev, player: 'anim-damage' }));
+                setTimeout(() => setAnimState(prev => ({ ...prev, player: '' })), 400);
+
+                setPlayerHp(prev => {
+                    const newHp = Math.max(0, prev - damageToApply);
+                    if (newHp === 0) setGameState('GAMEOVER');
+                    return newHp;
+                });
+                addLog(`You take *${damageToApply}* damage!`);
+            } else {
+                addLog('The attack was fully blocked!');
+            }
         }
         
         // Stun (Player)
         if (result.status === 'stun') {
             addLog("You are stunned! (Logic not implemented yet for player skip)");
             // If you implement this, you'd need a isPlayerStunned state and skip controls.
+        }
+
+        // Ongoing DOT (to player)
+        if (result.dot) {
+            setPlayerDots(prev => ([...prev, {...result.dot}]));
+            addLog(`You are afflicted with ${result.dot.tag}!`);
         }
 
         // 3. REFILL HAND
@@ -357,6 +511,7 @@ function App() {
       playerHp={playerHp}       
       maxPlayerHp={MAX_PLAYER_HP} 
       inventory={inventory}     
+      playerStatusEffects={playerDots}
       encounterIndex={enemyIndex}
       totalEncounters={ENCOUNTERS.length}
       enemy={currentEnemy}

@@ -6,7 +6,7 @@ export const ENCOUNTERS = [
     level: 1,
     hp: 15, wp: 5,
     desc: "A filthy rodent spreading disease.",
-    vocabulary: ["BITE", "GNAW", "SQUEAK", "FILTH", "RUN"],
+    vocabulary: ["BLEED"],
     weaknesses: {
       "fire": { mult: 1.5, msg: "It squeals!" },
       "fear": { mult: 2.0, target: "wp", msg: "It scampers away!" }

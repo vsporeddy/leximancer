@@ -48,7 +48,7 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
     }
   } else {
     // Enemy logic remains simple
-    basePower = spellData?.power || upperWord.length;
+     basePower = upperWord.length;
   }
 
   // 4. APPLY CHARACTER HOOKS 
@@ -72,7 +72,7 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
 
   // --- STANDARD LOGIC (Simplified for brevity) ---
   let isAttack = true;
-  if (tags.includes("flee")) {
+  if (tags.includes("motion")) {
     result.status = "flee";
     result.logs.push(`> Attempting to escape...`);
     result.emoji = "🏃";
@@ -127,6 +127,48 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
 
     // Formula: (Base + FlatBonus) * Multiplier
     result.damage = Math.floor((basePower + stats.flatBonus) * finalMult);
+  }
+
+  // 7. DOT EFFECTS (bleed / poison): create a small lingering effect unless target is immune
+  const dotTags = ["bleed", "poison"];
+  dotTags.forEach(dotTag => {
+    if (tags.includes(dotTag)) {
+      const res = target.resistances && target.resistances[dotTag];
+      if (res && res.mult === 0) {
+        result.logs.push(`> ${res.msg} (immune to ${dotTag}).`);
+      } else {
+        const duration = 3; // turns
+        // base per-tick scaled from basePower (spread over duration)
+        let perTick = Math.max(1, Math.floor((basePower + stats.flatBonus) / Math.max(1, duration)));
+        let mult = 1.0;
+        if (target.weaknesses && target.weaknesses[dotTag]) {
+          mult *= target.weaknesses[dotTag].mult;
+          result.logs.push(`> ${target.weaknesses[dotTag].msg} (x${target.weaknesses[dotTag].mult})`);
+          if (target.weaknesses[dotTag].target) result.targetStat = target.weaknesses[dotTag].target;
+        } else if (res) {
+          mult *= res.mult;
+          result.logs.push(`> ${res.msg} (x${res.mult})`);
+        }
+        // Apply multiplier to per-tick (use absolute so negative multipliers become negative ticks which can heal)
+        perTick = Math.floor(perTick * Math.abs(mult));
+        if (perTick > 0) {
+          result.dot = { tag: dotTag, ticks: duration, damagePerTick: perTick, mult };
+          result.logs.push(`> ${dotTag.charAt(0).toUpperCase() + dotTag.slice(1)} will deal *${perTick}* for ${duration} turns.`);
+        } else {
+          result.logs.push(`> No lasting ${dotTag} effect.`);
+        }
+      }
+    }
+  });
+
+  // 8. SHIELD: protective status that blocks a small amount of damage from next hit
+  if (tags.includes('shield')) {
+    const blockAmount = 2;
+    const duration = 1; // next hit
+    // Default: shield applies to the caster (self-buff)
+    result.statusEffect = { tag: 'shield', ticks: duration, block: blockAmount, applyTo: 'caster' };
+    result.logs.push(`> A protective barrier forms, blocking ${blockAmount} damage from the next attack.`);
+    result.emoji = result.emoji || '🛡️';
   }
 
   return result;

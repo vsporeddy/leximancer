@@ -1,104 +1,129 @@
 // Helper to construct spell objects efficiently
 const spellList = {};
 
-const register = (words, tags, power = 3) => {
+const register = (words, tags) => {
   words.forEach(word => {
-    spellList[word] = { tags, power };
+    spellList[word] = { tags };
   });
 };
 
 // --- CONTENT DEFINITION ---
 
-// 1. FIRE (Power: 4-5)
+// FIRE (Merged fire, heat, burn, light -> fire)
 register(
-  ["FIRE", "BURN", "HEAT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE"], 
-  ["fire"], 4
-);
-register(
-  ["FLAME", "BLAZE", "TORCH", "IGNITE", "EMBER", "SCORCH", "MAGMA"], 
-  ["fire", "light"], 5
-);
-register(["INFERNO", "WILDFIRE", "HELLFIRE"], ["fire", "destruction"], 8);
-
-// 2. WATER / ICE
-register(
-  ["WATER", "AQUA", "RAIN", "MIST", "DEW", "WASH", "BATH", "SOAK"], 
-  ["water"], 3
-);
-register(
-  ["ICE", "SNOW", "COLD", "FROST", "CHILL", "HAIL", "SLUSH", "FREEZE"], 
-  ["ice", "water"], 4
-);
-register(["GLACIER", "BLIZZARD", "TSUNAMI", "FLOOD"], ["water", "force"], 7);
-
-// 3. NATURE
-register(
-  ["TREE", "ROOT", "LEAF", "BARK", "WOOD", "VINE", "MOSS", "SEED", "BUSH"], 
-  ["plant"], 3
-);
-register(
-  ["FOREST", "JUNGLE", "GROWTH", "BLOOM", "THORN"], 
-  ["plant", "life"], 5
+  ["FIRE", "BURN", "HEAT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE", "FLAME", "BLAZE", "IGNITE", "INFERNO", "HELLFIRE", "SCORCH", "EMBER", "SMOKE", "TORCH", "CHARCOAL"], 
+  ["fire"]
 );
 
-// 4. COMBAT (Physical)
+// WATER & ICE (Merged cold -> ice, etc)
 register(
-  ["HIT", "HURT", "BASH", "BEAT", "KICK", "SLAP", "PUNCH", "STRIKE"], 
-  ["blunt", "physical"], 3
+  ["WATER", "AQUA", "RAIN", "MIST", "WASH", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW"], 
+  ["water"]
 );
 register(
-  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "GASH", "REND"], 
-  ["blade", "physical"], 4
-);
-register(
-  ["SMASH", "CRUSH", "SLAM", "BREAK", "CRASH", "WRECK"], 
-  ["blunt", "force"], 5
-);
-register(
-  ["SWORD", "AXE", "KNIFE", "DAGGER", "SPEAR", "MACE", "FLAIL"], 
-  ["weapon", "metal"], 4
+  ["ICE", "SNOW", "COLD", "FROST", "FREEZE", "CHILL", "GLACIER", "BLIZZARD", "SLEET"], 
+  ["ice"]
 );
 
-// 5. HOLY / UNHOLY
+// PHYSICAL (Merged force, weapon -> blunt/blade)
 register(
-  ["GHOST", "ZOMBIE", "GHOUL", "LICH", "DEATH", "GRAVE", "TOMB"], 
-  ["undead", "fear"], 5
+  ["HIT", "BASH", "BEAT", "KICK", "PUNCH", "STRIKE", "SMASH", "CRUSH", "SLAM", "BREAK"], 
+  ["blunt"]
 );
 register(
-  ["HOLY", "PRAY", "BLESS", "SAINT", "LIGHT", "GLORY", "SHINE"], 
-  ["holy", "light"], 5
+  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "SWORD", "AXE", "KNIFE", "DAGGER", "MACE", "HAMMER"], 
+  ["blade"]
 );
 
-// 6. SOCIAL / ABSTRACT
+// UTILITY
 register(
-  ["GOLD", "COIN", "CASH", "GEM", "RUBY", "PAY", "BUY", "SELL", "GREED"], 
-  ["bribe", "wealth"], 4
+  ["HEAL", "HEALTH", "MEND", "CURE", "REST", "POTION", "REGEN"], 
+  ["heal"]
 );
 register(
-  ["FEAR", "SCARE", "PANIC", "DREAD", "TERROR", "SCREAM", "SHOUT"], 
-  ["fear", "sound"], 4
+  ["RUN", "FLEE", "ESCAPE", "LEAVE", "BOLT", "SPRINT"], 
+  ["motion"] // mapped to 'flee' logic in engine
 );
 register(
-  ["LOVE", "HOPE", "JOY", "KISS", "HUG", "PEACE"], 
-  ["heal", "emotion"], 1
-); // Low damage, but maybe healing later?
+  ["STUN", "STOP", "HALT", "TRAP", "PARALYZE"], 
+  ["stun"]
+);
 
-// 7. UTILITY & HEALING
+// HOLY / LIGHT
 register(
-  ["HEAL", "HEALTH", "MEND", "CURE", "REST", "POTION", "ELIXIR"], 
-  ["heal", "magic"], 3
+  ["LIGHT", "HOLY", "RADIANT", "BLESS", "BLESSING", "DIVINE", "LUMEN", "SUN"], 
+  ["holy"]
+);
+
+// POISON / TOXIN
+register(
+  ["POISON", "TOXIN", "VENOM", "BLIGHT", "FUMES", "ROT"], 
+  ["poison"]
+);
+
+// ELECTRIC
+register(
+  ["THUNDER", "LIGHTNING", "SHOCK", "SPARK", "ZAP", "BOLT", "STORM"], 
+  ["electric"]
+);
+
+// AIR / WIND
+register(
+  ["WIND", "GUST", "BREEZE", "GALE", "ZEPHYR", "BREATH", "WHIRL"], 
+  ["air"]
+);
+
+// EARTH / STONE
+register(
+  ["EARTH", "STONE", "ROCK", "QUAKE", "RUMBLE", "TREMOR"], 
+  ["earth"]
+);
+
+// NATURE / PLANT
+register(
+  ["ROOT", "VINE", "GROW", "SEED", "BLOOM", "LEAF", "SPROUT", "NECTAR"], 
+  ["nature"]
+);
+
+// DARK / CURSE
+register(
+  ["DARK", "SHADOW", "CURSE", "VOID", "NIGHT", "HEX"], 
+  ["dark"]
+);
+
+// STATUS / MISC
+register(
+  ["FEAR", "TERROR", "SCARE", "PANIC", "FRIGHT", "DREAD"], 
+  ["fear"]
 );
 register(
-  ["APPLE", "BREAD", "MEAT", "STEAK", "PIE", "CAKE", "FOOD", "EAT"], 
-  ["food"], 2
+  ["SILENCE", "MUTE", "HUSH", "SHUSH"], 
+  ["silence"]
 );
 register(
-  ["RUN", "FLEE", "ESCAPE", "LEAVE", "EXIT", "BOLT"], 
-  ["flee", "motion"], 1
+  ["SLEEP", "NAP", "SLUMBER", "SNOOZE", "DREAM"], 
+  ["sleep"]
 );
 register(
-  ["STUN", "STOP", "HALT", "FREEZE", "SLOW", "TRAP"], 
-  ["stun", "force"], 3
+  ["ARMOR", "SHIELD", "PROTECT", "GUARD", "BARRIER"], 
+  ["shield"]
 );
+register(
+  ["SUMMON", "CALL", "CONJURE", "BECKON", "FAMILIAR"], 
+  ["summon"]
+);
+register(
+  ["BLEED", "GASH", "WOUND", "GORE"], 
+  ["bleed"]
+);
+register(
+  ["PIERCE", "PUNCTURE", "THRUST", "SPEAR", "LANCE"], 
+  ["pierce"]
+);
+register(
+  ["BRIBE", "COIN", "GOLD", "TREAT", "FOOD", "MEAT", "BREAD", "APPLE"], 
+  ["bribe", "food"]
+);
+
 
 export const SPELLBOOK = spellList;

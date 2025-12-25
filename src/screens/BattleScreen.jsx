@@ -1,11 +1,13 @@
 import Tile from "../components/Tile";
 import CombatLog from "../components/CombatLog";
+import { TAG_EMOJIS } from "../data/tags"; 
 
 export default function BattleScreen({ 
   playerAvatar, 
   playerHp,      
   maxPlayerHp,   
   inventory,     
+  playerStatusEffects, 
   encounterIndex, 
   totalEncounters,
   enemy, 
@@ -31,6 +33,26 @@ export default function BattleScreen({
   const enemySize = `${4 + (enemy.level || 1) * 0.8}rem`;
 
   const maxArtifacts = 5;
+
+  const tooltipFor = (effects, tag) => {
+    const eff = effects && effects.find(s => s.tag === tag);
+    if (!eff) return tag.toUpperCase();
+
+    switch (eff.tag) {
+      case 'poison':
+      case 'bleed':
+        return `${eff.tag.toUpperCase()}: ${eff.damagePerTick || 0} dmg/turn, ${eff.ticks || 0} turn(s)`;
+      case 'shield':
+        return `Shield: blocks ${eff.block || 0} damage (next hit)`;
+      case 'stun':
+        return `Stunned: ${eff.ticks || 1} turn(s)`;
+      case 'sleep':
+        return `Sleeping: ${eff.ticks || 1} turn(s)`;
+      default:
+        if (eff.ticks) return `${eff.tag.toUpperCase()}: ${eff.ticks} turn(s)`;
+        return eff.tag.toUpperCase();
+    }
+  };
 
   return (
     <div className="app">
@@ -66,6 +88,19 @@ export default function BattleScreen({
               <div className="bar-fill wp-fill" style={{ width: `${enemyWpPct}%` }}></div>
             </div>
           </div>
+
+          {enemy.statusEffects && enemy.statusEffects.length > 0 && (
+            <div className="enemy-status-effects">
+              {Array.from(new Set(enemy.statusEffects.map(s => s.tag))).map((tag, i) => {
+                const title = tooltipFor(enemy.statusEffects, tag);
+                return (
+                  <div key={i} className="dot-pill" title={title}>
+                    <span className="dot-emoji">{TAG_EMOJIS[tag] || '•'}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* --- PLAYER SECTION --- */}
@@ -77,6 +112,18 @@ export default function BattleScreen({
             </div>
             
             <div className="player-stats">
+               {playerStatusEffects && playerStatusEffects.length > 0 && (
+                 <div className="player-status-effects">
+                   {Array.from(new Set(playerStatusEffects.map(s => s.tag))).map((tag, i) => {
+                     const title = tooltipFor(playerStatusEffects, tag);
+                     return (
+                       <div key={i} className="dot-pill" title={title}>
+                         <span className="dot-emoji">{TAG_EMOJIS[tag] || '•'}</span>
+                       </div>
+                     );
+                   })}
+                 </div>
+               )}
                <div className="bar">
                  <div className="bar-text" style={{ textAlign: 'left', paddingLeft: '5px' }}>❤️ {playerHp}/{maxPlayerHp}</div>
                  <div className="bar-fill hp-fill" style={{ width: `${playerHpPct}%` }}></div>
