@@ -8,6 +8,7 @@ export default function BattleScreen({
   maxPlayerHp,   
   inventory,     
   playerStatusEffects, 
+  revealWeaknesses, 
   encounterIndex, 
   totalEncounters,
   enemy, 
@@ -74,6 +75,16 @@ export default function BattleScreen({
             </span> 
             {enemy.name}
           </h3>
+
+          {revealWeaknesses && enemy && enemy.weaknesses && (
+            <div className="enemy-weaknesses">
+              {Object.keys(enemy.weaknesses).map((w, i) => (
+                <div key={i} className="weakness-pill" title={`${w}: ${enemy.weaknesses[w].msg || ''}`}>
+                  {TAG_EMOJIS[w] || w}
+                </div>
+              ))}
+            </div>
+          )}
           
           {/* Apply animation class here */}
           <div 
@@ -134,11 +145,17 @@ export default function BattleScreen({
                  <div className="bar-text" style={{ textAlign: 'left', paddingLeft: '5px' }}>❤️ {playerHp}/{maxPlayerHp}</div>
                  <div className="bar-fill hp-fill" style={{ width: `${playerHpPct}%` }}></div>
                </div>
-               
+
                <div className="inventory">
-                 {inventory.map((item, i) => (
-                   <div key={i} className="artifact" title="Artifact">{item}</div>
-                 ))}
+                 {inventory.map((item, i) => {
+                   const isObj = item && typeof item === 'object';
+                   const key = isObj ? item.id : `inv-${i}`;
+                   const title = isObj ? `${item.name}: ${item.desc}` : 'Artifact';
+                   const content = isObj ? item.emoji : item;
+                   return (
+                     <div key={key} className="artifact" title={title}>{content}</div>
+                   );
+                 })}
                  {[...Array(Math.max(0, maxArtifacts - inventory.length))].map((_, i) => (
                     <div key={`empty-${i}`} className="artifact" style={{opacity: 0.3}}></div>
                  ))}

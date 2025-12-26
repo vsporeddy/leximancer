@@ -5,6 +5,7 @@ import './App.css'
 import { ENCOUNTERS } from './data/enemies';
 import { SPELLBOOK } from './data/spells';
 import { TAG_EMOJIS } from './data/tags';
+import { ARTIFACTS } from './data/artifacts';
 import { CHARACTERS, PLAYER_DEFENSE, STARTING_DECK } from './data/player';
 
 import { resolveSpell } from './engine/CombatEngine'
@@ -39,12 +40,15 @@ function App() {
   const [isDictLoading, setIsDictLoading] = useState(true);
 
   const [playerHp, setPlayerHp] = useState(MAX_PLAYER_HP);
-  const [inventory, setInventory] = useState(["🪄"]); 
+  const [inventory, setInventory] = useState([]);
 
   const [deck, setDeck] = useState([]);
   const [hand, setHand] = useState([]);
   const [spellSlots, setSpellSlots] = useState([]);
   
+  // Effective maxHP includes artifact bonuses
+  const effectiveMaxHp = MAX_PLAYER_HP + inventory.reduce((s,a)=> s + (a.maxHpBonus || 0), 0);
+
   const [currentEnemy, setCurrentEnemy] = useState(null);
   const [enemyIndex, setEnemyIndex] = useState(0);
   const [playerDots, setPlayerDots] = useState([]); // Ongoing effects on player (poison/bleed)
@@ -80,9 +84,10 @@ function App() {
     setPlayerChar(character);
     setDeck(shuffle(STARTING_DECK));
     setEnemyIndex(0);
-    setPlayerHp(MAX_PLAYER_HP);
+    setPlayerHp(effectiveMaxHp);
     setLogs(["The Leximancer enters the archives..."]);
     startEncounter(0);
+    setInventory([ARTIFACTS.find(a => a.id === 'tomato')])
   };
 
   const startEncounter = (index) => {
@@ -163,6 +168,16 @@ function App() {
       // 1. CALL THE ENGINE
      const result = resolveSpell(currentWordStr, playerChar, currentEnemy, true);
 
+      // Artifact: Fairy Wings (+verb damage)
+      const fairy = inventory.find(a => a.id === 'fairy_wings');
+      if (fairy && result.tags.includes(POS_TAG_MAP.verb)) {
+        const bonus = fairy.verbBonusDamage || 0;
+        if (bonus > 0) {
+          result.damage = (result.damage || 0) + bonus;
+          addLog(`(Fairy Wings) Verbs deal +${bonus} damage.`);
+        }
+      }
+
       // 2. SHOW VISUALS
       // Use Engine emoji or fallback to Tag lookup
       let visualEmoji = result.emoji;
@@ -204,7 +219,7 @@ function App() {
 
       // B. HEAL (Self)
       if (result.heal > 0) {
-          setPlayerHp(prev => Math.min(MAX_PLAYER_HP, prev + result.heal));
+          setPlayerHp(prev => Math.min(effectiveMaxHp, prev + result.heal));
           addLog(`Restored *${result.heal}* HP.`);
       }
 
@@ -400,6 +415,14 @@ function App() {
         if (result.damage > 0) {
             let damageToApply = result.damage;
 
+            // Artifact passive block (e.g., helmet)
+            const artifactBlock = inventory.reduce((s,a) => s + (a.incomingDamageBlock || 0), 0);
+            if (artifactBlock > 0) {
+                const reduced = Math.min(artifactBlock, damageToApply);
+                damageToApply -= reduced;
+                if (reduced > 0) addLog(`Your artifacts block *${reduced}* damage!`);
+            }
+
             // Check for shield on player
             const shieldIndex = playerDots ? playerDots.findIndex(s => s.tag === 'shield') : -1;
             if (shieldIndex >= 0) {
@@ -514,9 +537,10 @@ function App() {
     <BattleScreen 
       playerAvatar={playerChar?.avatar || "🧙‍♂️"} 
       playerHp={playerHp}       
-      maxPlayerHp={MAX_PLAYER_HP} 
+      maxPlayerHp={effectiveMaxHp} 
       inventory={inventory}     
       playerStatusEffects={playerDots}
+      revealWeaknesses={inventory.some(a => a.revealWeaknesses)}
       encounterIndex={enemyIndex}
       totalEncounters={ENCOUNTERS.length}
       enemy={currentEnemy}
