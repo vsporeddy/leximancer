@@ -415,15 +415,15 @@ h1 {
 
 /* --- LOG (Ink on paper) --- */
 .log {
-  height: 120px;
+  height: 100px;
   overflow-y: auto;
   background: rgba(255, 255, 255, 0.3);
   border: 1px solid var(--ink-secondary);
   padding: 10px;
   text-align: left;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-family: var(--font-body);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   color: var(--ink-primary);
   box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1);
 }
@@ -496,10 +496,10 @@ h1 {
 }
 
 .spell-slot {
-  min-height: 70px;
+  min-height: 55px;
   background: rgba(0, 0, 0, 0.03);
   border-bottom: 2px solid var(--ink-primary);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -519,7 +519,7 @@ h1 {
 }
 
 /* --- BUTTONS (Wax Seals / Old Labels) --- */
-.controls { margin-top: 30px; display: flex; gap: 15px; justify-content: center; }
+.controls { margin-top: 10px; display: flex; gap: 15px; justify-content: center; }
 
 button {
   padding: 10px 24px;
