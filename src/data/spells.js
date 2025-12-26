@@ -18,7 +18,7 @@ register(
 
 // WATER & ICE (Merged cold -> ice, etc)
 register(
-  ["WATER", "AQUA", "RAIN", "MIST", "WASH", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW"], 
+  ["WATER", "AQUA", "RAIN", "MIST", "WASH", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW", "DROOL", "PEE", "POOL", "SPLASH", "DRENCH", "DRIP", "DRIZZLE"], 
   ["water"]
 );
 register(
@@ -28,7 +28,7 @@ register(
 
 // PHYSICAL (Merged force, weapon -> blunt/blade)
 register(
-  ["HIT", "BASH", "BEAT", "KICK", "PUNCH", "STRIKE", "SMASH", "CRUSH", "SLAM", "BREAK"], 
+  ["HIT", "BASH", "BEAT", "KICK", "PUNCH", "STRIKE", "SMASH", "CRUSH", "SLAM", "BREAK", "STICK", "ROD", "STAFF"], 
   ["blunt"]
 );
 register(
