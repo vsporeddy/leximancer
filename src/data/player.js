@@ -31,7 +31,7 @@ export const CHARACTERS = [
     id: 'elementalist',
     name: 'Elementalist',
     avatar: '🧙🏾‍♂️',
-    desc: 'Elemental spells deal x2 damage.',
+    desc: 'Elemental spells deal double damage.',
     onCast: (stats, tags, word) => {
       // Check if any tag on the word matches the elemental list
       const isElemental = tags.some(t => ELEMENTAL_TAGS.includes(t));

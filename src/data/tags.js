@@ -33,5 +33,14 @@ export const TAG_EMOJIS = {
   silence: "🔇",
   sleep: "💤",
   shield: "🛡️",
-  summon: "🪄"
+  summon: "🪄",
+
+  // DISGUST
+  disgust: "🤢",
+
+  // SWEARING / PROFANITY
+  profanity: "🤬",
+
+  // CLEAN
+  clean: "🧼"
 };

@@ -11,7 +11,7 @@
   
   /* --- TYPOGRAPHY --- */
   --font-header: 'Cinzel', serif;
-  --font-body: 'Neue Montreal', serif;
+  --font-body: 'Verdana', sans-serif;
 }
 
 body {
@@ -148,7 +148,7 @@ h1 {
   font-size: 0.8rem;
   line-height: 1.2;
   color: var(--ink-secondary);
-  font-family: sans-serif; /* Readable small text */
+  /* font-family: sans-serif; */
 }
 
 /* --- MODAL STYLES --- */
@@ -434,7 +434,7 @@ h1 {
   color: #fff;
   font-weight: bold;
   text-shadow: 1px 1px 0 #000;
-  font-family: sans-serif; /* Keep legible */
+  /* font-family: sans-serif;  */
 }
 
 /* --- LOG (Ink on paper) --- */

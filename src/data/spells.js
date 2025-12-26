@@ -16,23 +16,27 @@ register(
   ["fire"]
 );
 
-// WATER & ICE (Merged cold -> ice, etc)
+// WATER & ICE
 register(
-  ["WATER", "AQUA", "RAIN", "MIST", "WASH", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW", "DROOL", "PEE", "POOL", "SPLASH", "DRENCH", "DRIP", "DRIZZLE"], 
+  ["WATER", "AQUA", "RAIN", "MIST", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW", "POOL", "SPLASH", "DRENCH", "DRIP", "DRIZZLE"], 
   ["water"]
 );
 register(
-  ["ICE", "SNOW", "COLD", "FROST", "FREEZE", "CHILL", "GLACIER", "BLIZZARD", "SLEET"], 
+  ["WASH", "BATH", "SHOWER", "RINSE", "BATHE", "LATHER"],
+  ["water", "clean"]
+)
+register(
+  ["ICE", "SNOW", "COLD", "FROST", "FREEZE", "CHILL", "GLACIER", "BLIZZARD", "SLEET", "AVALANCHE", "HAIL", "PERMAFROST", "ICICLE", "FROSTBITE"], 
   ["ice"]
 );
 
 // PHYSICAL (Merged force, weapon -> blunt/blade)
 register(
-  ["HIT", "BASH", "BEAT", "KICK", "PUNCH", "STRIKE", "SMASH", "CRUSH", "SLAM", "BREAK", "STICK", "ROD", "STAFF"], 
+  ["HIT", "BASH", "BEAT", "KICK", "PUNCH", "STRIKE", "SMASH", "CRUSH", "SLAM", "BREAK", "STICK", "ROD", "STAFF", "CLUB", "MACE", "HAMMER", "FIST", "GAUNTLET", "BAT", "CUDGEL", "SLEDGE"], 
   ["blunt"]
 );
 register(
-  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "SWORD", "AXE", "KNIFE", "DAGGER", "MACE", "HAMMER"], 
+  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "SWORD", "AXE", "KNIFE", "DAGGER", "SABER", "MACHEETE", "SICKLE", "SCYTHE", "BLADE", "HACK", "REAP", "FELL", "GASH", "RIP", "REND", "SLAUGHTER"], 
   ["blade"]
 );
 
@@ -60,6 +64,49 @@ register(
 register(
   ["POISON", "TOXIN", "VENOM", "BLIGHT", "FUMES", "ROT"], 
   ["poison"]
+);
+
+// DISGUST (vomit, poo, pee, scum, mud, slime)
+register(
+  ["VOMIT", "VOMITATE", "PUKE", "BARF", "RETCH", "SPEW", "UPCHUCK", "GURGLE"],
+  ["disgust"]
+);
+register(
+  ["POO", "POOP", "TURD", "FECES", "DUNG", "MANURE", "EXCREMENT", "WASTE", "DROPPINGS"],
+  ["disgust"]
+);
+register(
+  ["PEE", "URINE", "WEE"],
+  ["disgust"]
+);
+register(
+  ["SCUM", "MUD", "SLUDGE", "OOZE", "SLIME"],
+  ["disgust"]
+);
+register(
+  ["TRASH", "GARBAGE", "RUBBISH", "JUNK", "DEBRIS"],
+  ["disgust"]
+);
+
+// SWEAR / PROFANITY
+// Some vulgar words also imply disgust; register them with both tags where appropriate.
+register(
+  ["CRAP", "SHIT", "PISS"],
+  ["disgust", "profanity"]
+);
+register(
+  ["DAMN", "DARN", "DRAT", "DANG", "FRICK", "HECK"],
+  ["profanity"]
+);
+register(
+  ["FUCK", "FUCKING", "FUCKER", "FUCKED", "FUCKS", "FUCKY", "MOTHERFUCKER"],
+  ["profanity"]
+);
+
+// CLEAN / SANITIZE
+register(
+  ["CLEAN", "CLEANSE", "RINSE", "SCRUB", "SANITIZE", "BLEACH", "SOAP", "SUDS", "MOP", "SWEEP", "BROOM", "POLISH", "DEODORIZE", "PURGE"],
+  ["clean"]
 );
 
 // ELECTRIC
@@ -176,7 +223,7 @@ register(
   ["ice"]
 );
 register(
-  ["SHOCKWAVE", "ELECTROCUTE", "SURGE", "CURRENT", "SPARKS", "ARC"],
+  ["SHOCKWAVE", "ELECTROCUTE", "SURGE", "CURRENT", "SPARKS", "ARC", "LIGHTNING", "THUNDER"],
   ["electric"]
 );
 register(

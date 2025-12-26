@@ -18,9 +18,8 @@ export default function BattleScreen({
   actions,
   isValidWord,
   shakeError,
-  // NEW PROPS
-  animState, // { player: '', enemy: '' }
-  spellEffect // Emoji char or null
+  animState, 
+  spellEffect 
 }) {
   const { onMoveTile, onReturnTile, onCast, onClear, onDiscard, onShuffle } = actions;
 
@@ -191,8 +190,8 @@ export default function BattleScreen({
       </div>
 
       <div className="hand">
-        {hand.map(t => (
-          <Tile key={t.id} tile={t} onClick={onMoveTile} />
+        {hand.map((t, i) => (
+          t ? <Tile key={t.id} tile={t} onClick={onMoveTile} /> : <div key={`empty-${i}`} className="tile empty" />
         ))}
       </div>
 

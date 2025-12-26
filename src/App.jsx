@@ -21,7 +21,7 @@ const POS_TAG_MAP = {
     adverb: 'adverb',
 };
 
-const HAND_SIZE = 16;
+const HAND_SIZE = 35;
 const MAX_PLAYER_HP = 100;
 
 const shuffle = (array) => {
@@ -115,16 +115,21 @@ function App() {
   };
 
   const drawHand = (count, currentDeck, currentHand) => {
-    const newHand = [...currentHand];
+    // Fill existing null slots first, then append if needed
+    const newHand = currentHand ? [...currentHand] : [];
     let deckCopy = [...currentDeck];
     for (let i = 0; i < count; i++) {
       if (deckCopy.length === 0) {
         addLog("Deck empty. Reshuffling...");
         deckCopy = shuffle(STARTING_DECK);
       }
-      newHand.push({ id: Math.random(), char: deckCopy.pop() });
+      const tile = { id: Math.random(), char: deckCopy.pop() };
+      const nullIndex = newHand.findIndex(s => !s);
+      if (nullIndex >= 0) newHand[nullIndex] = tile;
+      else newHand.push(tile);
     }
     setDeck(deckCopy);
+    addLog("Current deck: " + deckCopy);
     setHand(newHand);
   };
 
@@ -343,7 +348,7 @@ function App() {
         // Clear a stun (it was decremented above)
         setCurrentEnemy(prev => ({ ...prev, isStunned: false }));
         // Refill hand anyway so player can play
-        const tilesNeeded = HAND_SIZE - hand.length;
+        const tilesNeeded = HAND_SIZE - hand.filter(Boolean).length;
         if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
         return;
       }
@@ -355,7 +360,7 @@ function App() {
         // Clear stun for next turn
         setCurrentEnemy(prev => ({ ...prev, isStunned: false }));
         // Refill hand anyway so player can play
-        const tilesNeeded = HAND_SIZE - hand.length;
+        const tilesNeeded = HAND_SIZE - hand.filter(Boolean).length;
         if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
         return;
     }
@@ -467,25 +472,45 @@ function App() {
         }
 
         // 3. REFILL HAND
-        const tilesNeeded = HAND_SIZE - hand.length;
+        const tilesNeeded = HAND_SIZE - hand.filter(Boolean).length;
         if (tilesNeeded > 0) drawHand(tilesNeeded, deck, hand);
 
     }, 500);
   };
 
   const handleMoveTile = (tile) => {
-    setHand(hand.filter(t => t.id !== tile.id));
-    setSpellSlots([...spellSlots, tile]);
+    setHand(prev => prev.map(h => (h && h.id === tile.id) ? null : h));
+    setSpellSlots(prev => [...prev, tile]);
   };
   const handleReturnTile = (tile) => {
-    setSpellSlots(spellSlots.filter(t => t.id !== tile.id));
-    setHand([...hand, tile]);
+    setSpellSlots(prev => prev.filter(t => t.id !== tile.id));
+    setHand(prev => {
+      const res = [...prev];
+      const idx = res.findIndex(s => !s);
+      if (idx >= 0) res[idx] = tile;
+      else res.push(tile);
+      return res;
+    });
   };
   const handleClear = () => {
-    setSpellSlots([]); 
-    setHand([...hand, ...spellSlots]);
+    setHand(prev => {
+      const res = [...prev];
+      spellSlots.forEach(tile => {
+        const idx = res.findIndex(s => !s);
+        if (idx >= 0) res[idx] = tile;
+        else res.push(tile);
+      });
+      return res;
+    });
+    setSpellSlots([]);
   };
   const handleShuffle = () => {
+    setHand(prev => {
+      const slots = [...prev];
+      const tiles = slots.filter(Boolean);
+      const shuffled = shuffle(tiles);
+      return slots.map(s => s ? shuffled.shift() : null);
+    });
     setHand(prev => shuffle([...prev]));
   };
   const handleDiscard = () => {

@@ -64,20 +64,20 @@ export default function StartScreen({ onStart, isLoading }) {
         <div className="modal-body">
           <p>You are a Leximancer, a mage who weaves reality through language.</p>
           
-          <h4>⚔️ Combat</h4>
+          <h4>Combat</h4>
           <ul>
             <li><strong>Spellcasting:</strong> Click tiles to form words. Words must be at least 3 letters long. Longer words generally deal more damage.</li>
             <li><strong>Elements:</strong> Words like <em>FIRE</em>, <em>ICE</em>, or <em>BLADE</em> have tags. Use them to exploit enemy weaknesses.</li>
             <li><strong>Utility:</strong> Words like <em>HEAL</em> or <em>FOOD</em> can restore your health. Words like <em>STUN</em> can freeze enemies.</li>
           </ul>
 
-          <h4>🃏 Hand Management</h4>
+          <h4>Hand Management</h4>
           <ul>
             <li><strong>🔀 Shuffle:</strong> Rearrange the order of your tiles (Free).</li>
             <li><strong>♻ Mulligan:</strong> Discard your hand for 16 new tiles, but <strong>skip your turn</strong>.</li>
           </ul>
 
-          <h4>👹 Enemies</h4>
+          <h4>Enemies</h4>
           <ul>
             <li>Enemies have their own vocabulary and will attack you with words.</li>
             <li>Enemies have both health (❤️) and willpower (🧠). Reduce either to zero to subdue them.</li>
