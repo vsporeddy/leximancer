@@ -14,15 +14,15 @@ export const LETTER_SCORES = {
 
 export const CHARACTERS = [
   {
-    id: 'conjurer',
-    name: 'Conjurer',
+    id: 'summoner',
+    name: 'Summoner',
     avatar: '🧞',
     desc: 'Nouns deal +2 damage.',
     // HOOK: Modify the calculated stats before damage is dealt
     onCast: (stats, tags, word) => {
       if (tags.includes('noun')) {
         stats.flatBonus += 2;
-        stats.logs.push(">(Conjurer) Noun Bonus +2");
+        stats.logs.push(">(Summoner) Noun Bonus +2");
       }
       return stats;
     }

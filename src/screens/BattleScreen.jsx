@@ -37,7 +37,7 @@ export default function BattleScreen({
   const primaryEmoji = emojis[0] || '';
   const secondaryEmoji = emojis.slice(1).join('');
 
-  const maxArtifacts = 5;
+  const maxArtifacts = 3;
 
   const tooltipFor = (effects, tag) => {
     const eff = effects && effects.find(s => s.tag === tag);
@@ -53,6 +53,8 @@ export default function BattleScreen({
         return `Stunned: ${eff.ticks || 1} turn(s)`;
       case 'sleep':
         return `Sleeping: ${eff.ticks || 1} turn(s)`;
+      case 'cute':
+        return `Cute: target deals ${eff.reduceMult ? `${Math.round(eff.reduceMult * 100)}%` : 'reduced'} damage for ${eff.ticks || 1} turn(s)`;
       default:
         if (eff.ticks) return `${eff.tag.toUpperCase()}: ${eff.ticks} turn(s)`;
         return eff.tag.toUpperCase();

@@ -269,7 +269,7 @@ h1 {
 
 .enemy-position h3 {
   margin: 0 0 5px 0; /* Remove top margin so it sits at the top */
-  font-size: 1.1rem;
+  font-size: 1rem;
   width: 100%;
   text-align: center;
 }
@@ -303,7 +303,7 @@ h1 {
   gap: 8px;
   justify-content: center;
   text-align: left;
-  width: 80%; /* Don't touch edges */
+  width: 40%; /* Don't touch edges */
   margin: 0 auto;
 }
 
@@ -423,7 +423,7 @@ h1 {
   color: var(--ink-primary);
 }
 
-/* --- BARS (Hand-drawn look) --- */
+/* --- BARS --- */
 .bars { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
 .bar { 
   flex: 1; 
@@ -432,7 +432,7 @@ h1 {
   border: 1px solid var(--ink-primary); 
   border-radius: 4px; 
   position: relative;
-  min-width: 0; /* Flexbox safety fix */
+  min-width: 0;
 }
 
 .bar-fill { height: 100%; transition: width 0.5s ease-out; }
@@ -443,15 +443,15 @@ h1 {
   position: absolute;
   width: 100%;
   text-align: left;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   line-height: 18px;
   color: #fff;
-  font-weight: bold;
+  /* font-weight: bold; */
   text-shadow: 1px 1px 0 #000;
   /* font-family: sans-serif;  */
 }
 
-/* --- LOG (Ink on paper) --- */
+/* --- LOG --- */
 .log {
   height: 100px;
   overflow-y: auto;

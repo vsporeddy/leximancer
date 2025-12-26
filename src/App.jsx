@@ -432,6 +432,14 @@ function App() {
         if (result.damage > 0) {
             let damageToApply = result.damage;
 
+            // Apply cute reduction on the attacker if present (enemy statusEffects reducing outgoing damage)
+            const cuteEff = enemyEntity.statusEffects ? enemyEntity.statusEffects.find(s => s.tag === 'cute') : null;
+            if (cuteEff && cuteEff.reduceMult) {
+              const before = damageToApply;
+              damageToApply = Math.max(0, Math.floor(damageToApply * cuteEff.reduceMult));
+              addLog(`#${enemyEntity.name}#'s damage is reduced (${Math.round((1 - cuteEff.reduceMult) * 100)}% reduction).`);
+            }
+
             // Artifact passive block (e.g., helmet)
             const artifactBlock = inventory.reduce((s,a) => s + (a.incomingDamageBlock || 0), 0);
             if (artifactBlock > 0) {

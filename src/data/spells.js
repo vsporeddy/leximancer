@@ -10,7 +10,7 @@ const register = (words, tags = [], opts = {}) => {
 
 // FIRE
 register(
-  ["FIRE", "BURN", "HEAT", "HOT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE", "FLAME", "BLAZE", "IGNITE", "INFERNO", "HELLFIRE", "SCORCH", "EMBER", "SMOKE", "TORCH", "CHARCOAL"], 
+  ["FIRE", "BURN", "HEAT", "HOT", "LIT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE", "FLAME", "BLAZE", "IGNITE", "INFERNO", "HELLFIRE", "SCORCH", "EMBER", "SMOKE", "TORCH", "CHARCOAL"], 
   ["fire"]
 );
 
@@ -20,7 +20,7 @@ register(
   ["water"]
 );
 register(
-  ["POND", "LAKE", "RIVER", "OCEAN", "SEA", "WAVE", "SURGE", "CURRENT", "STREAM", "CREEK", "BROOK", "FALLS"], 
+  ["POND", "LAKE", "RIVER", "OCEAN", "SEA", "WAVE", "SURGE", "CURRENT", "STREAM", "CREEK", "BROOK", "FALLS", "WET"], 
   ["water"]
 )
 register(
@@ -90,49 +90,58 @@ register(
 // DISGUST (vomit, poo, pee, scum, slime)
 register(
   ["VOMIT", "VOMITATE", "PUKE", "BARF", "RETCH", "SPEW", "UPCHUCK", "GURGLE"],
-  ["disgust"]
+  ["disgust"],
+  { target: 'wp' }
 );
 register(
   ["POO", "POOP", "TURD", "FECES", "DUNG", "MANURE", "EXCREMENT", "WASTE", "DROPPINGS"],
-  ["disgust"]
+  ["disgust"],
+  { target: 'wp' }
 );
 register(
   ["PEE", "URINE", "WEE"],
-  ["disgust"]
+  ["disgust"],
+  { target: 'wp' }
 );
 register(
   ["SCUM", "SLUDGE", "OOZE", "SLIME"],
-  ["disgust"]
+  ["disgust"],
+  { target: 'wp' }
 );
 register(
   ["TRASH", "GARBAGE", "RUBBISH", "JUNK", "DEBRIS"],
-  ["disgust"]
+  ["disgust"],
+  { target: 'wp' }
 );
 
 // CUTE / CHARM
 register(
   ["CUTE", "FLUFFY", "AWW", "KAWAII", "ADORABLE", "FUZZY"],
-  ["cute"]
+  ["cute"],
+  { target: 'wp' }
 );
 
 // SWEAR / PROFANITY
 // Some vulgar words also imply disgust; register them with both tags where appropriate.
 register(
   ["CRAP", "SHIT", "PISS"],
-  ["disgust", "profanity"]
+  ["disgust", "profanity"],
+  { target: 'wp' }
 );
 register(
   ["DAMN", "DARN", "DRAT", "DANG", "FRICK", "HECK"],
-  ["profanity"]
+  ["profanity"],
+  { target: 'wp' }
 );
 register(
   ["FUCK", "FUCKING", "FUCKER", "FUCKED", "FUCKS", "FUCKY", "MOTHERFUCKER"],
-  ["profanity"]
+  ["profanity"],
+  { target: 'wp' }
 );
 
 // CLEAN / SANITIZE
 register(
-  ["CLEAN", "CLEANSE", "RINSE", "SCRUB", "SANITIZE", "BLEACH", "SOAP", "SUDS", "MOP", "SWEEP", "BROOM", "POLISH", "DEODORIZE", "PURGE"],
+  ["CLEAN", "CLEANSE", "RINSE", "SCRUB", "SANITIZE", "BLEACH", "SOAP", "SUDS", "MOP", "SWEEP", "BROOM", "POLISH", "DEODORIZE", "PURGE", "DRY"],
   ["clean"]
 );
 
@@ -163,7 +172,8 @@ register(
 // DARK / CURSE
 register(
   ["DARK", "SHADOW", "CURSE", "VOID", "NIGHT", "HEX"], 
-  ["dark"]
+  ["dark"],
+  { target: 'wp' }
 );
 
 // PSYCHIC / MIND (Willpower / WP-focused)
@@ -182,7 +192,7 @@ register(
 
 // LOUD / SONIC (WP damage)
 register(
-  ["YELL", "SHOUT", "ROAR", "SCREECH", "SCREAM", "BOOM", "BELLOW", "CRASH", "CLAMOR", "RESONATE", "DIN", "BANG", "BLARE", "BLAST", "BLUSTER", "THUNDER"],
+  ["YELL", "SHOUT", "ROAR", "SCREECH", "SCREAM", "BOOM", "BELLOW", "HOWL", "CRASH", "CLAMOR", "RESONATE", "DIN", "BANG", "BLARE", "BLAST", "BLUSTER", "THUNDER"],
   ["loud"],
   { target: 'wp' }
 );
@@ -289,7 +299,8 @@ register(
 );
 register(
   ["HEX", "DEFILE", "DREADCURSE", "MALISON", "BANISH"],
-  ["dark"]
+  ["dark"],
+  { target: 'wp' }
 );
 
 // --- PSYCHIC / WP-Focused (target: wp) ---
@@ -353,11 +364,6 @@ register(
   { target: 'wp' }
 );
 
-// --- EXTRA FLAVOR WORDS (mixed)
-register(
-  ["ROAR", "BELLOW", "HOWL", "SCREAM"],
-  ["blunt"],
-);
 register(
   ["SIGH", "BREATH", "INHALE", "EXHALE"],
   ["air"]

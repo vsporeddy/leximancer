@@ -198,7 +198,14 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
     result.logs.push(`> A protective barrier forms, blocking ${blockAmount} damage from the next attack.`);
     result.emoji = result.emoji || '🛡️';
   }
-
+  // CUTE: reduce target's outgoing damage for a few turns
+  if (tags.includes('cute')) {
+    const duration = 3;
+    // reduceMult is the multiplier to multiply outgoing damage by (0.5 = half damage)
+    result.statusEffect = { tag: 'cute', ticks: duration, reduceMult: 0.5 };
+    result.logs.push(`> The target is charmed and will deal reduced damage for ${duration} turns.`);
+    result.emoji = result.emoji || '🥹';
+  }
   // Prefer an elemental tag emoji when multiple tags are present (elemental > physical)
   const elementalPriority = ['fire','water','ice','electric','air','earth','nature','poison'];
   let chosenTag = null;
