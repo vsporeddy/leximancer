@@ -290,10 +290,11 @@ h1 {
 .enemy-emoji .emoji-primary { display: inline-block; line-height: 1; }
 .enemy-emoji .emoji-secondary {
   display: inline-block;
+  z-index: -1;
   line-height: 1;
-  font-size: 0.6em; /* smaller secondary */
-  margin-left: -0.35rem; /* pull closer to primary */
-  transform: translateY(-0.08em); /* slight vertical offset */
+  font-size: 0.5em; /* smaller secondary */
+  margin-left: -0.7em; /* pull closer to primary */
+  transform: translateY(-0.3em); /* slight vertical offset */
   opacity: 0.95;
 }
 

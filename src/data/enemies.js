@@ -8,14 +8,13 @@ const BASES = {
       level: 1,
       hp: 15,
       wp: 5,
-      desc: 'A filthy rodent.',
       vocabulary: ['BITE', 'GNAW', 'SQUEAK'],
       weaknesses: {
-        fire: { mult: 1.5, msg: 'It squeals!' },
-        fear: { mult: 2.0, target: 'wp', msg: 'It scampers away!' }
+        fire: { mult: 1.5 },
+        fear: { mult: 2.0, target: 'wp' }
       },
       resistances: {
-        poison: { mult: 0.0, msg: 'It eats poison for breakfast.' }
+        poison: { mult: 0.0 }
       }
     },
     {
@@ -25,10 +24,9 @@ const BASES = {
       level: 1,
       hp: 12,
       wp: 4,
-      desc: 'A foul pile of refuse.',
       vocabulary: ['STINK', 'SMEAR'],
       weaknesses: {
-        clean: { mult: 2.0, msg: 'It dissolves!' }
+        clean: { mult: 2.0 }
       },
       resistances: {}
     },
@@ -39,27 +37,25 @@ const BASES = {
       level: 1,
       hp: 18,
       wp: 6,
-      desc: 'Slow but sticky.',
       vocabulary: ['SLIME', 'SHELL'],
       weaknesses: {},
       resistances: {
-        water: { mult: 0.5, msg: 'Slippery.' }
+        water: { mult: 0.5 }
       }
     }
   ],
 
   2: [
     {
-      id: 'crow',
-      name: 'crow',
-      emoji: '🐦‍⬛',
+      id: 'bird',
+      name: 'bird',
+      emoji: '🐦',
       level: 2,
       hp: 22,
       wp: 15,
-      desc: 'A dark-winged scavenger.',
       vocabulary: ['CROAK', 'PECK', 'TAUNT'],
       weaknesses: {
-        loud: { mult: 1.5, target: 'wp', msg: 'The noise startles!' }
+        loud: { mult: 1.5, target: 'wp' }
       },
       resistances: {}
     },
@@ -70,13 +66,12 @@ const BASES = {
       level: 2,
       hp: 24,
       wp: 12,
-      desc: 'Slithering and venomous.',
       vocabulary: ['BITE', 'HISS', 'VENOM'],
       weaknesses: {
-        fire: { mult: 1.5, msg: 'It recoils from the flame.' }
+        fire: { mult: 1.5 }
       },
       resistances: {
-        poison: { mult: 0.5, msg: 'Partially immune.' }
+        poison: { mult: 0.5 }
       }
     }
   ],
@@ -89,10 +84,9 @@ const BASES = {
       level: 3,
       hp: 35,
       wp: 20,
-      desc: 'A hollowed menace.',
       vocabulary: ['ROLL', 'SMASH', 'GLOW'],
       weaknesses: {
-        blade: { mult: 2.0, msg: 'Splits open!' }
+        blade: { mult: 2.0 }
       },
       resistances: {}
     },
@@ -103,10 +97,9 @@ const BASES = {
       level: 3,
       hp: 30,
       wp: 25,
-      desc: 'Small and nasty.',
       vocabulary: ['STAB', 'STEAL', 'SHOUT'],
       weaknesses: {
-        bribe: { mult: 2.5, target: 'wp', msg: 'Ooh! Shiny!' }
+        bribe: { mult: 2.5, target: 'wp' }
       },
       resistances: {}
     }
@@ -120,10 +113,9 @@ const BASES = {
       level: 4,
       hp: 50,
       wp: 40,
-      desc: 'A terrifying entertainer.',
       vocabulary: ['JEST', 'SQUEAK', 'BOOM'],
       weaknesses: {
-        taunt: { mult: 1.5, target: 'wp', msg: 'It blunders under ridicule!' }
+        taunt: { mult: 1.5, target: 'wp' }
       },
       resistances: {}
     },
@@ -134,10 +126,9 @@ const BASES = {
       level: 4,
       hp: 55,
       wp: 45,
-      desc: 'A strange otherworldly being.',
       vocabulary: ['ZAP', 'PROBE', 'HUM'],
       weaknesses: {
-        mind: { mult: 1.5, target: 'wp', msg: 'Its mind wavers!' }
+        mind: { mult: 1.5, target: 'wp' }
       },
       resistances: {}
     }
@@ -151,13 +142,12 @@ const BASES = {
       level: 5,
       hp: 90,
       wp: 30,
-      desc: 'Huge and slow-witted.',
       vocabulary: ['SMASH', 'THUMP', 'ROAR'],
       weaknesses: {
-        fire: { mult: 1.5, msg: 'It burns!' }
+        fire: { mult: 1.5 }
       },
       resistances: {
-        blunt: { mult: 0.8, msg: 'Thick hide.' }
+        blunt: { mult: 0.8 }
       }
     },
     {
@@ -167,13 +157,12 @@ const BASES = {
       level: 5,
       hp: 70,
       wp: 40,
-      desc: 'Stoic and enduring.',
       vocabulary: ['SPIT', 'TRUDGE', 'ENDURE'],
       weaknesses: {
-        water: { mult: 1.5, msg: 'It drinks deeply.' }
+        water: { mult: 1.5 }
       },
       resistances: {
-        heat: { mult: 0.8, msg: 'Heat is no bother.' }
+        heat: { mult: 0.8 }
       }
     }
   ]
@@ -193,10 +182,10 @@ const AFFIXES = [
       5: ['CONFLAGRATE', 'INCINERATE', 'APOCALYPSE']
     },
     weaknesses: {
-      water: { mult: 2.0, msg: 'Steam hisses violently!' }
+      water: { mult: 2.0 }
     },
     resistances: {
-      fire: { mult: 0.0, msg: 'It bathes in flame.' }
+      fire: { mult: 0.0 }
     }
   },
   {
@@ -211,10 +200,10 @@ const AFFIXES = [
       5: ['DELUGE', 'MONSOON']
     },
     weaknesses: {
-      ice: { mult: 2.0, msg: 'Thermal shock!' }
+      ice: { mult: 2.0 }
     },
     resistances: {
-      water: { mult: 0.0, msg: 'It absorbs water.' }
+      water: { mult: 0.0 }
     }
   },
   {
@@ -230,7 +219,7 @@ const AFFIXES = [
     },
     weaknesses: {},
     resistances: {
-      air: { mult: 0.5, msg: 'Born of wind.' }
+      air: { mult: 0.5 }
     }
   },
   {
@@ -245,10 +234,10 @@ const AFFIXES = [
       5: ['DARKNESS']
     },
     weaknesses: {
-      holy: { mult: 2.0, msg: 'Light burns the dark!' }
+      holy: { mult: 2.0 }
     },
     resistances: {
-      dark: { mult: 0.0, msg: 'It is one with darkness.' }
+      dark: { mult: 0.0 }
     }
   },
   {
@@ -263,10 +252,10 @@ const AFFIXES = [
       5: ['THUNDERCLAP']
     },
     weaknesses: {
-      earth: { mult: 1.5, msg: 'Grounded!' }
+      earth: { mult: 1.5 }
     },
     resistances: {
-      electric: { mult: 0.0, msg: 'Conductive mantle.' }
+      electric: { mult: 0.0 }
     }
   },
   {
@@ -281,10 +270,10 @@ const AFFIXES = [
       5: ['FORESTCALL']
     },
     weaknesses: {
-      fire: { mult: 2.0, msg: 'Leaves scorch!' }
+      fire: { mult: 2.0 }
     },
     resistances: {
-      earth: { mult: 0.8, msg: 'Rooted strength.' }
+      earth: { mult: 0.8 }
     }
   },
   {
@@ -299,10 +288,10 @@ const AFFIXES = [
       5: ['CATACLYSM']
     },
     weaknesses: {
-      ice: { mult: 1.5, msg: 'Cracks form.' }
+      ice: { mult: 1.5 }
     },
     resistances: {
-      earth: { mult: 0.0, msg: 'Stone melds.' }
+      earth: { mult: 0.0 }
     }
   },
   {
@@ -317,10 +306,10 @@ const AFFIXES = [
       5: ['RAIN']
     },
     weaknesses: {
-      blunt: { mult: 1.5, msg: 'Knocked off balance.' }
+      blunt: { mult: 1.5 }
     },
     resistances: {
-      pierce: { mult: 0.2, msg: 'Arrows are no issue.' }
+      pierce: { mult: 0.2 }
     }
   }
 ];
@@ -359,8 +348,6 @@ export function createEnemy(stageIndex) {
   const resistances = { ...(base.resistances || {}) };
   if (affix && affix.resistances) Object.keys(affix.resistances).forEach(k => { resistances[k] = affix.resistances[k]; });
 
-  const desc = affix ? `${capitalize(affix.name)} ${base.desc}` : base.desc;
-
   return {
     id,
     name,
@@ -368,7 +355,6 @@ export function createEnemy(stageIndex) {
     level: base.level,
     hp: base.hp,
     wp: base.wp,
-    desc,
     vocabulary,
     weaknesses,
     resistances

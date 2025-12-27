@@ -136,14 +136,14 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
       if (target.weaknesses && target.weaknesses[tag]) {
         const weak = target.weaknesses[tag];
         finalMult *= weak.mult;
-        result.logs.push(`> ${weak.msg} (x${weak.mult})`);
+        result.logs.push(`> Weak to ${tag}! (x${weak.mult})`);
         if (weak.target) result.targetStat = weak.target;
         // Seer bonus: +3 flat damage if the caster is the Seer and a weakness matched
         if (caster && caster.id === 'seer') seerTriggered = true;
       } else if (target.resistances && target.resistances[tag]) {
         const res = target.resistances[tag];
         finalMult *= res.mult;
-        result.logs.push(`> ${res.msg} (x${res.mult})`);
+        result.logs.push(`> Resistant to ${tag}! (x${res.mult})`);
       }
     });
 
@@ -162,7 +162,7 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
     if (tags.includes(dotTag)) {
       const res = target.resistances && target.resistances[dotTag];
       if (res && res.mult === 0) {
-        result.logs.push(`> ${res.msg} (immune to ${dotTag}).`);
+        result.logs.push(`> Resistant to ${dotTag}! (immune).`);
       } else {
         const duration = 3; // turns
         // base per-tick scaled from basePower (spread over duration)
@@ -170,11 +170,11 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
         let mult = 1.0;
         if (target.weaknesses && target.weaknesses[dotTag]) {
           mult *= target.weaknesses[dotTag].mult;
-          result.logs.push(`> ${target.weaknesses[dotTag].msg} (x${target.weaknesses[dotTag].mult})`);
+          result.logs.push(`> Weak to ${dotTag}! (x${target.weaknesses[dotTag].mult})`);
           if (target.weaknesses[dotTag].target) result.targetStat = target.weaknesses[dotTag].target;
         } else if (res) {
           mult *= res.mult;
-          result.logs.push(`> ${res.msg} (x${res.mult})`);
+          result.logs.push(`> Resistant to ${dotTag}! (x${res.mult})`);
         }
         // Apply multiplier to per-tick (use absolute so negative multipliers become negative ticks which can heal)
         perTick = Math.floor(perTick * Math.abs(mult));

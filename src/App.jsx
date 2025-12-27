@@ -199,11 +199,7 @@ function App() {
 
       console.log("Spell Result:", result);
       // 3. LOGGING
-      if (result.tags.includes(POS_TAG_MAP.noun)) {
-          addLog(`You conjured ^${currentWordStr}^!`);
-      } else {
-        addLog(`You cast ^${currentWordStr}^!`);
-      }
+      addLog(`You cast ^${currentWordStr}^!`);
       if (result.tags.length > 0) {
           const meaningfulTags = result.tags.filter(t => !['the', 'a', 'an', 'noun', 'verb', 'adjective', 'adverb'].includes(t)); // Filter out common ones for cleaner logs
           if (meaningfulTags.length > 0) {

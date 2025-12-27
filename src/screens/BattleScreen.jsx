@@ -162,7 +162,7 @@ export default function BattleScreen({
             <div className="weakness-crystal" title="Crystal Ball reveals weaknesses">🔮</div>
             <div className="weakness-list">
               {Object.keys(enemy.weaknesses).map((w, i) => (
-                <span key={i} className="weakness-emoji" title={`${w}: ${enemy.weaknesses[w].msg || ''}`}>
+                <span key={i} className="weakness-emoji" title={`weak to ${w}`}>
                   {TAG_EMOJIS[w] || w}
                 </span>
               ))}

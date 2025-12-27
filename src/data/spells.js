@@ -10,7 +10,7 @@ const register = (words, tags = [], opts = {}) => {
 
 // FIRE
 register(
-  ["FIRE", "BURN", "HEAT", "HOT", "LIT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE", "FLAME", "BLAZE", "IGNITE", "INFERNO", "HELLFIRE", "SCORCH", "EMBER", "SMOKE", "TORCH", "CHARCOAL", "ROAST", "BAKE", "SIZZLE", "CINDER", "SINGE", "FIREBRAND"], 
+  ["FIRE", "BURN", "HEAT", "HOT", "LIT", "LAVA", "ASH", "COAL", "SEAR", "CHAR", "PYRE", "FLAME", "BLAZE", "IGNITE", "INFERNO", "HELLFIRE", "SCORCH", "EMBER", "SMOKE", "TORCH", "CHARCOAL", "ROAST", "BAKE", "SIZZLE", "CINDER", "SINGE", "FIREBRAND", "MELT"], 
   ["fire"]
 );
 
@@ -28,7 +28,7 @@ register(
   ["water", "clean"]
 )
 register(
-  ["ICE", "SNOW", "COLD", "FROST", "FREEZE", "CHILL", "GLACIER", "BLIZZARD", "SLEET", "AVALANCHE", "HAIL", "PERMAFROST", "ICICLE", "FROSTBITE"], 
+  ["ICE", "SNOW", "COLD", "FROST", "FREEZE", "CHILL", "GLACIER", "BLIZZARD", "SLEET", "AVALANCHE", "HAIL", "PERMAFROST", "ICICLE", "FROSTBITE", "SHIVER", "SLEETSTORM"], 
   ["ice"]
 );
 
@@ -38,25 +38,27 @@ register(
   ["blunt"]
 );
 register(
-  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "SWORD", "AXE", "KNIFE", "DAGGER", "SABER", "MACHEETE", "SICKLE", "SCYTHE", "BLADE", "HACK", "REAP", "FELL", "GASH", "RIP", "REND", "SLAUGHTER", "SAW"], 
+  ["CUT", "SLICE", "STAB", "SLASH", "CHOP", "CLEAVE", "SWORD", "AX", "AXE", "KNIFE", "DAGGER", "SABER", "MACHEETE", "SICKLE", "SCYTHE", "BLADE", "HACK", "REAP", "FELL", "GASH", "RIP", "REND", "SLAUGHTER", "SAW", "SHIV"], 
   ["blade"]
 );
 
 // UTILITY
 register(
-  ["HEAL", "HEALTH", "MEND", "CURE", "REST", "POTION", "REGEN"], 
+  ["HEAL", "HEALTH", "MEND", "CURE", "REST", "POTION", "REGEN", "HEALER", "RECOVER"], 
   ["heal"]
 );
 
 // LIFESTEAL / DRAIN
 register(
   ["DRAIN", "SIPHON", "LIFESTEAL", "CONSUME", "DEVOUR", "LEECH", "ABSORB", "SAP"],
-  ["lifesteal"]
+  ["lifesteal",],
+  { target: 'hp' }
 );
 register(
   [
   "SUCK", "SLURP", "GULP", "SWALLOW", "INGEST", "BITE", "NIBBLE", "CHEW", "GNAW", "MUNCH", "CRUNCH"],
-  ["lifesteal"]
+  ["lifesteal"],
+  { target: 'hp' }
 )
 register(
   ["FOOD", "EAT", "MEAL", "BREAD", "FRUIT", "VEGGIE", "MEAT", "APPLE", "BERRY", "HUNT", "GATHER", "FORAGE", "SNACK", "FEAST", "DINE"], 
@@ -67,12 +69,17 @@ register(
   ["food"]
 )
 register(
+  ["MILK", "JUICE", "BOBA", "SMOOTHIE", "TEA", "COFFEE", "MILKSHAKE", "BEVERAGE", "DRINK", "SODA", "POP", "COLA"],
+  ["food"]
+)
+register(
   ["RUN", "FLEE", "ESCAPE", "LEAVE", "BOLT", "SPRINT"], 
   ["motion"] // mapped to 'flee' logic in engine
 );
 register(
   ["STUN", "STOP", "HALT", "TRAP", "PARALYZE", "DAZE", "BIND", "PETRIFY", "IMMOBILIZE"], 
-  ["stun"]
+  ["stun"],
+  { target: 'wp' }
 );
 
 // HOLY / LIGHT
@@ -84,11 +91,13 @@ register(
 // POISON / TOXIN
 register(
   ["POISON", "TOXIN", "VENOM", "BLIGHT", "FUMES", "ROT"], 
-  ["poison"]
+  ["poison"],
+  { target: 'hp' }
 );
 register(
   ["SICK", "AIL", "ILL", "DISEASE", "FEVER", "VIRUS", "PLAGUE", "MALADY", "CONTAGION"], 
-  ["poison"]
+  ["poison"],
+  { target: 'hp' }
 )
 
 // DISGUST (vomit, poo, pee, scum, slime)
@@ -196,7 +205,7 @@ register(
 
 // LOUD / SONIC (WP damage)
 register(
-  ["YELL", "SHOUT", "ROAR", "SCREECH", "SCREAM", "BOOM", "BELLOW", "HOWL", "CRASH", "CLAMOR", "RESONATE", "DIN", "BANG", "BLARE", "BLAST", "BLUSTER", "THUNDER"],
+  ["YELL", "SHOUT", "ROAR", "SCREECH", "SCREAM", "BOOM", "BELLOW", "HOWL", "CRASH", "CLAMOR", "RESONATE", "DIN", "BANG", "BLARE", "BLAST", "BLUSTER", "THUNDER", "NOISE", "CACOPHONY", "SOUND"],
   ["loud"],
   { target: 'wp' }
 );
@@ -254,7 +263,7 @@ register(
   ["blade", "bleed"]
 );
 register(
-  ["ARROW", "BOLT", "BULLET", "SHOT", "FIREARROW", "DART", "SPEAR", "LANCE"],
+  ["ARROW", "BOLT", "BULLET", "SHOT", "DART", "SPEAR", "LANCE"],
   ["pierce"]
 );
 register(
@@ -325,7 +334,7 @@ register(
   { target: 'wp' }
 );
 register(
-  ["INSULT", "TAUNT", "JEER", "PROVOKE", "DERIDE", "RIDICULE", "SNEER"],
+  ["INSULT", "TAUNT", "JEER", "PROVOKE", "DERIDE", "RIDICULE", "SNEER", "BULLY"],
   ["taunt"],
   { target: 'wp' }
 );
