@@ -17,7 +17,7 @@ register(
 // WATER & ICE
 register(
   ["WATER", "AQUA", "RAIN", "MIST", "SOAK", "FLOOD", "TSUNAMI", "STEAM", "DEW", "POOL", "SPLASH", "DRENCH", "DRIP", "DRIZZLE"], 
-  ["water"]
+  ["water"],
 );
 register(
   ["POND", "LAKE", "RIVER", "OCEAN", "SEA", "WAVE", "SURGE", "CURRENT", "STREAM", "CREEK", "BROOK", "FALLS", "WET"], 
@@ -51,14 +51,12 @@ register(
 // LIFESTEAL / DRAIN
 register(
   ["DRAIN", "SIPHON", "LIFESTEAL", "CONSUME", "DEVOUR", "LEECH", "ABSORB", "SAP"],
-  ["lifesteal",],
-  { target: 'hp' }
+  ["lifesteal",]
 );
 register(
   [
   "SUCK", "SLURP", "GULP", "SWALLOW", "INGEST", "BITE", "NIBBLE", "CHEW", "GNAW", "MUNCH", "CRUNCH"],
-  ["lifesteal"],
-  { target: 'hp' }
+  ["lifesteal"]
 )
 register(
   ["FOOD", "EAT", "MEAL", "BREAD", "FRUIT", "VEGGIE", "MEAT", "APPLE", "BERRY", "HUNT", "GATHER", "FORAGE", "SNACK", "FEAST", "DINE"], 
@@ -74,12 +72,11 @@ register(
 )
 register(
   ["RUN", "FLEE", "ESCAPE", "LEAVE", "BOLT", "SPRINT"], 
-  ["motion"] // mapped to 'flee' logic in engine
+  ["motion"]
 );
 register(
   ["STUN", "STOP", "HALT", "TRAP", "PARALYZE", "DAZE", "BIND", "PETRIFY", "IMMOBILIZE"], 
-  ["stun"],
-  { target: 'wp' }
+  ["stun"]
 );
 
 // HOLY / LIGHT
@@ -91,65 +88,50 @@ register(
 // POISON / TOXIN
 register(
   ["POISON", "TOXIN", "VENOM", "BLIGHT", "FUMES", "ROT"], 
-  ["poison"],
-  { target: 'hp' }
+  ["poison"]
 );
 register(
   ["SICK", "AIL", "ILL", "DISEASE", "FEVER", "VIRUS", "PLAGUE", "MALADY", "CONTAGION"], 
-  ["poison"],
-  { target: 'hp' }
+  ["poison"]
 )
 
 // DISGUST (vomit, poo, pee, scum, slime)
 register(
   ["VOMIT", "VOMITATE", "PUKE", "BARF", "RETCH", "SPEW", "UPCHUCK", "GURGLE"],
-  ["disgust"],
-  { target: 'wp' }
+  ["disgust"]
 );
 register(
   ["POO", "POOP", "TURD", "FECES", "DUNG", "MANURE", "EXCREMENT", "WASTE", "DROPPINGS"],
-  ["disgust"],
-  { target: 'wp' }
+  ["disgust"]
 );
 register(
   ["PEE", "URINE", "WEE"],
-  ["disgust"],
-  { target: 'wp' }
+  ["disgust"]
 );
 register(
   ["SCUM", "SLUDGE", "OOZE", "SLIME"],
-  ["disgust"],
-  { target: 'wp' }
+  ["disgust"]
 );
 register(
   ["TRASH", "GARBAGE", "RUBBISH", "JUNK", "DEBRIS"],
-  ["disgust"],
-  { target: 'wp' }
+  ["disgust"]
 );
 
 // CUTE / CHARM
 register(
   ["CUTE", "FLUFFY", "AWW", "KAWAII", "ADORABLE", "FUZZY"],
-  ["cute"],
-  { target: 'wp' }
+  ["cute"]
 );
 
 // SWEAR / PROFANITY
 // Some vulgar words also imply disgust; register them with both tags where appropriate.
 register(
   ["CRAP", "SHIT", "PISS"],
-  ["disgust", "profanity"],
-  { target: 'wp' }
+  ["disgust", "profanity"]
 );
 register(
-  ["DAMN", "DARN", "DRAT", "DANG", "FRICK", "HECK"],
-  ["profanity"],
-  { target: 'wp' }
-);
-register(
-  ["FUCK", "FUCKING", "FUCKER", "FUCKED", "FUCKS", "FUCKY", "MOTHERFUCKER"],
-  ["profanity"],
-  { target: 'wp' }
+  ["DAMN", "DARN", "DRAT", "DANG", "FRICK", "HECK", "FUCK", "CUNT", "BITCH", "ASSHOLE", "BULLSHIT", "BASTARD", "DICK", "PRICK"],
+  ["profanity"]
 );
 
 // CLEAN / SANITIZE
@@ -185,51 +167,43 @@ register(
 // DARK / CURSE
 register(
   ["DARK", "SHADOW", "CURSE", "VOID", "NIGHT", "HEX"], 
-  ["dark"],
-  { target: 'wp' }
+  ["dark"]
 );
 
 // PSYCHIC / MIND (Willpower / WP-focused)
 register(
   ["MIND", "PSYCHIC", "PSY", "THOUGHT", "HAUNT", "INVADE", "MANIPULATE", "CONTROL", "BRAIN", "INSANE"],
-  ["mind", "psychic"],
-  { target: 'wp' }
+  ["mind", "psychic"]
 );
 
 // TAUNT / PROVOKE (verbal mind attacks)
 register(
   ["TAUNT", "INSULT", "JEER", "PROVOKE", "DERIDE", "RIDICULE"],
-  ["taunt"],
-  { target: 'wp' }
+  ["taunt"]
 );
 
 // LOUD / SONIC (WP damage)
 register(
   ["YELL", "SHOUT", "ROAR", "SCREECH", "SCREAM", "BOOM", "BELLOW", "HOWL", "CRASH", "CLAMOR", "RESONATE", "DIN", "BANG", "BLARE", "BLAST", "BLUSTER", "THUNDER", "NOISE", "CACOPHONY", "SOUND"],
-  ["loud"],
-  { target: 'wp' }
+  ["loud"]
 );
 
 // STATUS / MISC
 register(
   ["FEAR", "TERROR", "SCARE", "PANIC", "FRIGHT", "DREAD", "DANGER", "ALARM"], 
-  ["fear"],
-  { target: 'wp' }
+  ["fear"]
 );
 register(
   ["SILENCE", "MUTE", "HUSH", "SHUSH", "QUIET", "STIFLE", "SQUELCH"], 
-  ["silence"],
-  { target: 'wp' }
+  ["silence"]
 );
 register(
   ["SLEEP", "NAP", "SLUMBER", "SNOOZE", "DREAM", "ZZZ"], 
-  ["sleep"],
-  { target: 'wp' }
+  ["sleep"]
 );
 register(
   ["NIGHTMARE"],
-  ["sleep", "fear", "dark"],
-  { target: 'wp' }
+  ["sleep", "fear", "dark"]
 )
 register(
   ["ARMOR", "SHIELD", "PROTECT", "GUARD", "BARRIER", "SHELL", "WARD", "AEGIS", "DEFEND", "CLOAK", "COVERING"], 
@@ -249,8 +223,7 @@ register(
 );
 register(
   ["BRIBE", "COIN", "GOLD", "TREAT", "MONEY", "PAY", "RICHES", "WEALTH", "TREASURE"], 
-  ["bribe"],
-  { target: 'wp' }
+  ["bribe"]
 );
 
 // --- MORE PHYSICAL / STANDARD ATTACKS (HP) ---
@@ -308,40 +281,33 @@ register(
 // --- HOLY / UNHOLY ---
 register(
   ["SMITE", "EXORCISE", "BAPTIZE", "SANCTIFY", "ANNOINT"],
-  ["holy"],
-  { target: 'wp' }
+  ["holy"]
 );
 register(
   ["HEX", "DEFILE", "DREADCURSE", "MALISON", "BANISH"],
-  ["dark"],
-  { target: 'wp' }
+  ["dark"]
 );
 
 // --- PSYCHIC / WP-Focused (target: wp) ---
 register(
   ["CHARM", "ENCHANT", "BEWITCH", "FASCINATE", "MESMERIZE", "LURE", "TEMPT"],
-  ["mind", "psychic"],
-  { target: 'wp' }
+  ["mind", "psychic"]
 );
 register(
   ["CONFUSE", "QUIZ", "BOGGLE", "HALLUCINATE", "DELIRIUM", "PARANOIA", "DELUSION", "MADNESS", "PAIN", "AGONY", "TORMENT", "ANGUISH", "SUFFERING"],
-  ["mind"],
-  { target: 'wp' }
+  ["mind"]
 );
 register(
   ["WHISPER", "WHISPERED", "MURMUR", "INSINUATE", "PSYCHOWHISPER"],
-  ["taunt", "mind"],
-  { target: 'wp' }
+  ["taunt", "mind"]
 );
 register(
   ["INSULT", "TAUNT", "JEER", "PROVOKE", "DERIDE", "RIDICULE", "SNEER", "BULLY"],
-  ["taunt"],
-  { target: 'wp' }
+  ["taunt"]
 );
 register(
   ["ENRAGE", "SUBVERT", "SABOTAGE", "MANIPULATE", "COERCE"],
-  ["mind", "dark"],
-  { target: 'wp' }
+  ["mind", "dark"]
 );
 
 // --- STATUS / UTILITY EXTENSIONS ---
@@ -369,13 +335,11 @@ register(
 // --- SOCIAL / ECONOMIC ---
 register(
   ["HAGGLE", "BARGAIN", "NEGOTIATE", "PLEAD"],
-  ["bribe"],
-  { target: 'wp' }
+  ["bribe"]
 );
 register(
   ["GIFT", "OFFER", "TRIBUTE", "PRESENT"],
-  ["bribe", "holy"],
-  { target: 'wp' }
+  ["bribe", "holy"]
 );
 
 register(
@@ -384,15 +348,14 @@ register(
 );
 register(
   ["GLARE", "STARE", "GAPE", "SCOWL"],
-  ["mind", "taunt"],
-  { target: 'wp' }
+  ["mind", "taunt"]
 );
 
 // --- AFFIX-LEVEL VOCABULARY (from enemy affixes) ---
 register(["INCENDIO", "CONFLARE", "CONFLAGRATE", "APOCALYPSE"], ["fire"]);
 register(["MONSOON"], ["water"]);
 register(["TEMPEST"], ["air"]);
-register(["NOCTURNAL", "OBLIVION", "DARKNESS"], ["dark"], { target: 'wp' });
+register(["NOCTURNAL", "OBLIVION", "DARKNESS"], ["dark"]);
 register(["CHAIN", "THUNDERCLAP"], ["electric"]);
 register(["OVERGROWTH", "FORESTCALL"], ["nature"]);
 register(["RUPTURE", "LANDSLIDE", "CATACLYSM"], ["earth"]);

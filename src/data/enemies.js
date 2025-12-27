@@ -8,27 +8,21 @@ const BASES = {
       level: 1,
       hp: 15,
       wp: 5,
-      vocabulary: ['BITE', 'GNAW', 'SQUEAK'],
-      weaknesses: {
-        fire: { mult: 1.5 },
-        fear: { mult: 2.0, target: 'wp' }
-      },
-      resistances: {
-        poison: { mult: 0.0 }
-      }
+      vocabulary: ['BITE', 'GNAW', 'CHEW'],
+      weaknesses: ['fear', 'earth'],
+      resistances: ['poison']
     },
     {
-      id: 'poop',
-      name: 'poop',
-      emoji: '💩',
+      id: 'roach',
+      name: 'roach',
+      emoji: '🪳',
       level: 1,
       hp: 12,
       wp: 4,
-      vocabulary: ['STINK', 'SMEAR'],
-      weaknesses: {
-        clean: { mult: 2.0 }
-      },
-      resistances: {}
+      vocabulary: ['BUG', 'CRAWL'],
+      weaknesses: ['clean', 'blunt'],
+      immunities: ['loud', 'silence'],
+      resistances: []
     },
     {
       id: 'snail',
@@ -38,10 +32,8 @@ const BASES = {
       hp: 18,
       wp: 6,
       vocabulary: ['SLIME', 'SHELL'],
-      weaknesses: {},
-      resistances: {
-        water: { mult: 0.5 }
-      }
+      weaknesses: [],
+      resistances: ['water', 'pierce']
     }
   ],
 
@@ -53,11 +45,9 @@ const BASES = {
       level: 2,
       hp: 22,
       wp: 15,
-      vocabulary: ['CROAK', 'PECK', 'TAUNT'],
-      weaknesses: {
-        loud: { mult: 1.5, target: 'wp' }
-      },
-      resistances: {}
+      vocabulary: ['CHIRP', 'PECK', 'FLY'],
+      weaknesses: ['loud'],
+      resistances: ['earth', 'air']
     },
     {
       id: 'snake',
@@ -67,12 +57,8 @@ const BASES = {
       hp: 24,
       wp: 12,
       vocabulary: ['BITE', 'HISS', 'VENOM'],
-      weaknesses: {
-        fire: { mult: 1.5 }
-      },
-      resistances: {
-        poison: { mult: 0.5 }
-      }
+      weaknesses: ['fire'],
+      resistances: ['poison']
     }
   ],
 
@@ -85,10 +71,8 @@ const BASES = {
       hp: 35,
       wp: 20,
       vocabulary: ['ROLL', 'SMASH', 'GLOW'],
-      weaknesses: {
-        blade: { mult: 2.0 }
-      },
-      resistances: {}
+      weaknesses: ['blade'],
+      resistances: []
     },
     {
       id: 'goblin',
@@ -98,10 +82,8 @@ const BASES = {
       hp: 30,
       wp: 25,
       vocabulary: ['STAB', 'STEAL', 'SHOUT'],
-      weaknesses: {
-        bribe: { mult: 2.5, target: 'wp' }
-      },
-      resistances: {}
+      weaknesses: ['bribe'],
+      resistances: []
     }
   ],
 
@@ -114,10 +96,8 @@ const BASES = {
       hp: 50,
       wp: 40,
       vocabulary: ['JEST', 'SQUEAK', 'BOOM'],
-      weaknesses: {
-        taunt: { mult: 1.5, target: 'wp' }
-      },
-      resistances: {}
+      weaknesses: ['taunt'],
+      resistances: []
     },
     {
       id: 'alien',
@@ -127,11 +107,9 @@ const BASES = {
       hp: 55,
       wp: 45,
       vocabulary: ['ZAP', 'PROBE', 'HUM'],
-      weaknesses: {
-        mind: { mult: 1.5, target: 'wp' }
-      },
-      resistances: {}
-    }
+      weaknesses: ['mind'],
+      resistances: []
+    },
   ],
 
   5: [
@@ -140,30 +118,22 @@ const BASES = {
       name: 'troll',
       emoji: '🧌',
       level: 5,
-      hp: 90,
-      wp: 30,
+      hp: 140,
+      wp: 40,
       vocabulary: ['SMASH', 'THUMP', 'ROAR'],
-      weaknesses: {
-        fire: { mult: 1.5 }
-      },
-      resistances: {
-        blunt: { mult: 0.8 }
-      }
+      weaknesses: ['taunt','mind','cute'],
+      resistances: ['blunt','earth']
     },
     {
       id: 'camel',
       name: 'camel',
       emoji: '🐫',
       level: 5,
-      hp: 70,
+      hp: 90,
       wp: 40,
-      vocabulary: ['SPIT', 'TRUDGE', 'ENDURE'],
-      weaknesses: {
-        water: { mult: 1.5 }
-      },
-      resistances: {
-        heat: { mult: 0.8 }
-      }
+      vocabulary: ['MASTICATE', 'TRUDGING', 'REGURGITATE', 'MIRAGE'],
+      weaknesses: ['ice'],
+      resistances: ['earth','water']
     }
   ]
 };
@@ -181,12 +151,9 @@ const AFFIXES = [
       4: ['INCENDIO', 'CONFLARE'],
       5: ['CONFLAGRATE', 'INCINERATE', 'APOCALYPSE']
     },
-    weaknesses: {
-      water: { mult: 2.0 }
-    },
-    resistances: {
-      fire: { mult: 0.0 }
-    }
+    weaknesses: ['water'],
+    resistances: [],
+    immunities: ['fire']
   },
   {
     id: 'water',
@@ -199,12 +166,9 @@ const AFFIXES = [
       4: ['TSUNAMI'],
       5: ['DELUGE', 'MONSOON']
     },
-    weaknesses: {
-      ice: { mult: 2.0 }
-    },
-    resistances: {
-      water: { mult: 0.0 }
-    }
+    weaknesses: ['ice'],
+    resistances: [],
+    immunities: ['water']
   },
   {
     id: 'wind',
@@ -217,10 +181,8 @@ const AFFIXES = [
       4: ['CYCLONE'],
       5: ['TEMPEST']
     },
-    weaknesses: {},
-    resistances: {
-      air: { mult: 0.5 }
-    }
+    weaknesses: [],
+    resistances: ['air']
   },
   {
     id: 'dark',
@@ -233,12 +195,9 @@ const AFFIXES = [
       4: ['OBLIVION'],
       5: ['DARKNESS']
     },
-    weaknesses: {
-      holy: { mult: 2.0 }
-    },
-    resistances: {
-      dark: { mult: 0.0 }
-    }
+    weaknesses: ['holy'],
+    resistances: [],
+    immunities: ['dark']
   },
   {
     id: 'lightning',
@@ -251,12 +210,9 @@ const AFFIXES = [
       4: ['STORMY'],
       5: ['THUNDERCLAP']
     },
-    weaknesses: {
-      earth: { mult: 1.5 }
-    },
-    resistances: {
-      electric: { mult: 0.0 }
-    }
+    weaknesses: ['earth'],
+    resistances: [],
+    immunities: ['electric']
   },
   {
     id: 'verdant',
@@ -269,12 +225,8 @@ const AFFIXES = [
       4: ['OVERGROWTH'],
       5: ['FORESTCALL']
     },
-    weaknesses: {
-      fire: { mult: 2.0 }
-    },
-    resistances: {
-      earth: { mult: 0.8 }
-    }
+    weaknesses: ['fire'],
+    resistances: ['earth']
   },
   {
     id: 'stone',
@@ -287,12 +239,9 @@ const AFFIXES = [
       4: ['LANDSLIDE'],
       5: ['CATACLYSM']
     },
-    weaknesses: {
-      ice: { mult: 1.5 }
-    },
-    resistances: {
-      earth: { mult: 0.0 }
-    }
+    weaknesses: ['ice'],
+    resistances: [],
+    immunities: ['earth']
   },
   {
     id: 'archer',
@@ -305,12 +254,23 @@ const AFFIXES = [
       4: ['VOLLEY'],
       5: ['RAIN']
     },
-    weaknesses: {
-      blunt: { mult: 1.5 }
+    weaknesses: ['blunt'],
+    resistances: ['pierce']
+  },
+  {
+    id: 'toxic',
+    name: 'toxic',
+    emoji: '☣️',
+    vocabByLevel: {
+      1: ['ROT'],
+      2: ['FUMES', 'ROT'],
+      3: ['TOXIC', 'POISON'],
+      4: ['VENOMOUS'],
+      5: ['ROTTENBITE']
     },
-    resistances: {
-      pierce: { mult: 0.2 }
-    }
+    weaknesses: ['earth'],
+    resistances: [],
+    immunities: ['poison']
   }
 ];
 
@@ -343,10 +303,15 @@ export function createEnemy(stageIndex) {
   const vocabulary = Array.from(new Set([...(base.vocabulary || []), ...affixVocab]));
 
   // Merge weaknesses and resistances (affix overrides base where specified)
-  const weaknesses = { ...(base.weaknesses || {}) };
-  if (affix && affix.weaknesses) Object.keys(affix.weaknesses).forEach(k => { weaknesses[k] = affix.weaknesses[k]; });
-  const resistances = { ...(base.resistances || {}) };
-  if (affix && affix.resistances) Object.keys(affix.resistances).forEach(k => { resistances[k] = affix.resistances[k]; });
+  // NOTE: Individual `mult` values on weakness/resistance entries are deprecated.
+  // The engine now uses standardized receiving multipliers: weaknesses = 2.0, resistances = 0.5.
+  // To make a tag fully immune (no damage and no status effects), add it to `immunities` (array of tag ids).
+  // Merge weaknesses and resistances (affix overrides base where specified)
+  const weaknesses = Array.from(new Set([...(base.weaknesses || []), ...(affix && affix.weaknesses ? affix.weaknesses : [])]));
+  const resistances = Array.from(new Set([...(base.resistances || []), ...(affix && affix.resistances ? affix.resistances : [])]));
+
+  // Merge immunities (new field): list of tags this enemy is immune to
+  const immunities = Array.from(new Set([...(base.immunities || []), ...(affix && affix.immunities ? affix.immunities : [])]));
 
   return {
     id,
@@ -357,6 +322,7 @@ export function createEnemy(stageIndex) {
     wp: base.wp,
     vocabulary,
     weaknesses,
-    resistances
+    resistances,
+    immunities
   };
 }

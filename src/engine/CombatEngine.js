@@ -1,11 +1,14 @@
-// --- IMPORTS ---
 import { PLAYER_DEFENSE, LETTER_SCORES } from "../data/player";
-import { TAG_EMOJIS } from "../data/tags";
+import { TAG_EMOJIS, TAG_TARGETS } from "../data/tags";
 import { SPELLBOOK } from '../data/spells';
+
+// Standardized multipliers (weakness/resistance/immunity)
+const WEAKNESS_MULT = 2.0;
+const RESISTANCE_MULT = 0.5;
+const IMMUNITY_MULT = 0.0;
 import { stemmer } from 'stemmer';
 import compromise from 'compromise';
 
-// Default scoring strategy (The "Ramp")
 const defaultCalculatePower = (word) => {
   const upper = word.toUpperCase();
   let score = 0;
@@ -21,7 +24,7 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
   const stemmedWord = stemmer(word).toUpperCase();
   const upperWord = word.toUpperCase();
   console.log(`Resolving spell: "${word}" (stem: "${stemmedWord}")`);
-  // 1. NLP TAGGING
+  // NLP TAGGING
   const doc = compromise(word);
   const json = doc.json();
   let posTags = [];
@@ -30,35 +33,32 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
   }
   const meaningfulPos = posTags.find(t => ['noun', 'verb', 'adjective', 'adverb'].includes(t));
   
-  // 2. GET BASE DATA
+  // GET BASE DATA
   const spellData = SPELLBOOK[stemmedWord] || SPELLBOOK[upperWord];
   let tags = [...(spellData?.tags || [])];
-  if (meaningfulPos) tags.push(meaningfulPos);
+  // if (meaningfulPos) tags.push(meaningfulPos);
 
-  // Determine target stat (hp vs wp): explicit spell setting wins, otherwise POS rules
+  // Determine target stat (hp vs wp): use tag-level config first, otherwise fallback to POS rules
   let inferredTarget = 'hp';
-  if (spellData?.target) {
-    inferredTarget = spellData.target;
+  // Prefer the first tag which has an explicit target defined in TAG_TARGETS
+  const tagWithTarget = tags.find(t => TAG_TARGETS[t]);
+  if (tagWithTarget) {
+    inferredTarget = TAG_TARGETS[tagWithTarget];
   } else if (meaningfulPos) {
     inferredTarget = (['adjective', 'adverb'].includes(meaningfulPos) ? 'wp' : 'hp');
   }
   
-  // 3. CALCULATE BASE POWER
+  // CALCULATE BASE POWER
   let basePower = 0;
   
-  if (isPlayerCasting) {
-    // CHECK FOR CHARACTER OVERRIDES (e.g., custom calculateBasePower)
-    if (caster.calculateBasePower) {
-        basePower = caster.calculateBasePower(upperWord);
-    } else {
-        basePower = defaultCalculatePower(upperWord);
-    }
+  // CHECK FOR CHARACTER OVERRIDES (e.g., custom calculateBasePower)
+  if (caster.calculateBasePower) {
+      basePower = caster.calculateBasePower(upperWord);
   } else {
-    // Enemy logic remains simple
-     basePower = upperWord.length;
+      basePower = defaultCalculatePower(upperWord);
   }
 
-  // 4. APPLY CHARACTER HOOKS 
+  // APPLY CHARACTER HOOKS 
   let stats = {
       multiplier: 1.0,
       flatBonus: 0,
@@ -70,14 +70,13 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
       stats = caster.onCast(stats, tags, upperWord);
   }
 
-  // 5. SETUP RESULT
+  // SET UP RESULT
   const result = {
     damage: 0, targetStat: inferredTarget, heal: 0, status: null,
     logs: [...stats.logs], // Add class-specific logs
     tags: tags, emoji: "✨"
   };
 
-  // --- STANDARD LOGIC (Simplified for brevity) ---
   let isAttack = true;
   if (tags.includes("motion")) {
     result.status = "flee";
@@ -88,8 +87,8 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
 
   if (tags.includes("heal")) {
     result.heal = basePower * 2;
-	isAttack = false;
-    result.emoji = "💖";
+    isAttack = false;
+    // result.emoji = "💖";
     result.logs.push(`> Restoration magic!`);
   }
 
@@ -101,29 +100,53 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
     // } else {
     isAttack = false; // Eat it yourself
     result.heal = Math.round(basePower * 2);
-    // result.emoji = "😋";
     result.logs.push(`> A delicious snack.`);
     // }
   }
 
   // CC
+  // Helper to check tag immunities on the target
+  const isImmuneTo = (t) => Array.isArray(target.immunities) && target.immunities.includes(t);
+
   if (tags.includes("ice")) {
-    // 50% chance to stun? Or guaranteed? Let's say guaranteed for now.
-    result.status = "stun";
-    result.logs.push(`> Freezing effect!`);
+    if (!isImmuneTo('ice')) {
+      // 50% chance to stun? Or guaranteed? Let's say guaranteed for now.
+      result.status = "stun";
+      result.logs.push(`> Freezing effect!`);
+    } else {
+      result.logs.push(`> Immune to ice.`);
+    }
     // result.emoji = "🧊";
   }
 
   if (tags.includes("stun")) {
-    result.status = "stun";
-    result.logs.push(`> Stunned!`);
+    if (!isImmuneTo('stun')) {
+      result.status = "stun";
+      result.logs.push(`> Stunned!`);
+    } else {
+      result.logs.push(`> Immune to stun.`);
+    }
     // result.emoji = "😵‍💫";
   }
 
   if (tags.includes("silence")) {
-    result.status = "silence";
-    result.logs.push(`> Magical silence!`);
+    if (!isImmuneTo('silence')) {
+      result.status = "silence";
+      result.logs.push(`> Magical silence!`);
+    } else {
+      result.logs.push(`> Immune to silence.`);
+    }
     // result.emoji = "🔇";
+  }
+
+  if (tags.includes('shield')) {
+    isAttack = false;
+    const blockAmount = basePower * 1.5;
+    const duration = 1; // next hit
+    // Default: shield applies to the caster (self-buff)
+    result.statusEffect = { tag: 'shield', ticks: duration, block: blockAmount, applyTo: 'caster' };
+    result.logs.push(`> Blocks ${blockAmount} damage from the next attack.`);
+    result.emoji = result.emoji || '🛡️';
   }
 
   // 6. FINAL DAMAGE CALCULATION
@@ -131,19 +154,32 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
     let finalMult = stats.multiplier; // Start with Class Multiplier
     let seerTriggered = false;
 
-    // Target Weakness/Resistance
+    // Target Weakness/Resistance (using standardized multipliers and immunities)
     tags.forEach(tag => {
-      if (target.weaknesses && target.weaknesses[tag]) {
-        const weak = target.weaknesses[tag];
-        finalMult *= weak.mult;
-        result.logs.push(`> Weak to ${tag}! (x${weak.mult})`);
-        if (weak.target) result.targetStat = weak.target;
+      // Immunity overrides everything
+      if (Array.isArray(target.immunities) && target.immunities.includes(tag)) {
+        finalMult *= IMMUNITY_MULT;
+        result.logs.push(`> Immune to ${tag}! (no effect)`);
+        return;
+      }
+
+      if (Array.isArray(target.weaknesses) && target.weaknesses.includes(tag)) {
+        finalMult *= WEAKNESS_MULT;
+        result.logs.push(`> Weak to ${tag}! (x${WEAKNESS_MULT})`);
         // Seer bonus: +3 flat damage if the caster is the Seer and a weakness matched
         if (caster && caster.id === 'seer') seerTriggered = true;
+      } else if (target.weaknesses && target.weaknesses[tag]) {
+        // Back-compat for object-style weaknesses
+        finalMult *= WEAKNESS_MULT;
+        result.logs.push(`> Weak to ${tag}! (x${WEAKNESS_MULT})`);
+        if (caster && caster.id === 'seer') seerTriggered = true;
+      } else if (Array.isArray(target.resistances) && target.resistances.includes(tag)) {
+        finalMult *= RESISTANCE_MULT;
+        result.logs.push(`> Resistant to ${tag}! (x${RESISTANCE_MULT})`);
       } else if (target.resistances && target.resistances[tag]) {
-        const res = target.resistances[tag];
-        finalMult *= res.mult;
-        result.logs.push(`> Resistant to ${tag}! (x${res.mult})`);
+        // Back-compat for object-style resistances
+        finalMult *= RESISTANCE_MULT;
+        result.logs.push(`> Resistant to ${tag}! (x${RESISTANCE_MULT})`);
       }
     });
 
@@ -160,43 +196,42 @@ export function resolveSpell(word, caster, target, isPlayerCasting = true) {
   const dotTags = ["bleed", "poison"];
   dotTags.forEach(dotTag => {
     if (tags.includes(dotTag)) {
-      const res = target.resistances && target.resistances[dotTag];
-      if (res && res.mult === 0) {
-        result.logs.push(`> Resistant to ${dotTag}! (immune).`);
+      // Immunity trumps DOT
+      if (Array.isArray(target.immunities) && target.immunities.includes(dotTag)) {
+        result.logs.push(`> Immune to ${dotTag}! (immune).`);
+        return;
+      }
+
+      const duration = 3; // turns
+      // base per-tick scaled from basePower (spread over duration)
+      let perTick = Math.max(1, Math.floor((basePower + stats.flatBonus) / Math.max(1, duration)));
+      let mult = 1.0;
+      if (Array.isArray(target.weaknesses) && target.weaknesses.includes(dotTag)) {
+        mult *= WEAKNESS_MULT;
+        result.logs.push(`> Weak to ${dotTag}! (x${WEAKNESS_MULT})`);
+      } else if (target.weaknesses && target.weaknesses[dotTag]) {
+        // Back-compat for object-style weaknesses
+        dotMult *= WEAKNESS_MULT;
+        result.logs.push(`> Weak to ${dotTag}! (x${WEAKNESS_MULT})`);
+      } else if (Array.isArray(target.resistances) && target.resistances.includes(dotTag)) {
+        dotMult *= RESISTANCE_MULT;
+        result.logs.push(`> Resistant to ${dotTag}! (x${RESISTANCE_MULT})`);
+      } else if (target.resistances && target.resistances[dotTag]) {
+        // Back-compat for object-style resistances
+        mult *= RESISTANCE_MULT;
+        result.logs.push(`> Resistant to ${dotTag}! (x${RESISTANCE_MULT})`);
+      }
+      // Apply multiplier to per-tick (use absolute so negative multipliers become negative ticks which can heal)
+      perTick = Math.floor(perTick * Math.abs(mult));
+      if (perTick > 0) {
+        result.dot = { tag: dotTag, ticks: duration, damagePerTick: perTick, mult };
+        result.logs.push(`> ${dotTag.charAt(0).toUpperCase() + dotTag.slice(1)} will deal *${perTick}* for ${duration} turns.`);
       } else {
-        const duration = 3; // turns
-        // base per-tick scaled from basePower (spread over duration)
-        let perTick = Math.max(1, Math.floor((basePower + stats.flatBonus) / Math.max(1, duration)));
-        let mult = 1.0;
-        if (target.weaknesses && target.weaknesses[dotTag]) {
-          mult *= target.weaknesses[dotTag].mult;
-          result.logs.push(`> Weak to ${dotTag}! (x${target.weaknesses[dotTag].mult})`);
-          if (target.weaknesses[dotTag].target) result.targetStat = target.weaknesses[dotTag].target;
-        } else if (res) {
-          mult *= res.mult;
-          result.logs.push(`> Resistant to ${dotTag}! (x${res.mult})`);
-        }
-        // Apply multiplier to per-tick (use absolute so negative multipliers become negative ticks which can heal)
-        perTick = Math.floor(perTick * Math.abs(mult));
-        if (perTick > 0) {
-          result.dot = { tag: dotTag, ticks: duration, damagePerTick: perTick, mult };
-          result.logs.push(`> ${dotTag.charAt(0).toUpperCase() + dotTag.slice(1)} will deal *${perTick}* for ${duration} turns.`);
-        } else {
-          result.logs.push(`> No lasting ${dotTag} effect.`);
-        }
+        result.logs.push(`> No lasting ${dotTag} effect.`);
       }
     }
   });
 
-  // 8. SHIELD: protective status that blocks a small amount of damage from next hit
-  if (tags.includes('shield')) {
-    const blockAmount = 2;
-    const duration = 1; // next hit
-    // Default: shield applies to the caster (self-buff)
-    result.statusEffect = { tag: 'shield', ticks: duration, block: blockAmount, applyTo: 'caster' };
-    result.logs.push(`> A protective barrier forms, blocking ${blockAmount} damage from the next attack.`);
-    result.emoji = result.emoji || '🛡️';
-  }
   // CUTE: reduce target's outgoing damage for a few turns
   if (tags.includes('cute')) {
     const duration = 3;
